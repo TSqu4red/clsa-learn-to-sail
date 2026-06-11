@@ -14,8 +14,8 @@ A single self-contained HTML page — no build step, no dependencies.
 - **Right of Way quiz** — five illustrated scenarios with correct boom/tack geometry
 - **Racing Basics** — starts, courses, penalties, beginner strategy, with links to the
   [Racing Rules of Sailing 2025–2028](https://www.sailing.org/inside-world-sailing/rules-regulations/racing-rules-of-sailing/)
-- **Knots** — five essential knots with animated tying diagrams and links to video
-  demos on [Animated Knots by Grog](https://www.animatedknots.com)
+- **Knots** — five essential knots with embedded tying videos from
+  [Animated Knots by Grog](https://www.animatedknots.com)
 - **Capsize recovery** — based on CLSA's own righting and rescue procedures
 - **Glossary** — searchable sailing terms
 

@@ -31,11 +31,6 @@
   header h1 { font-size: 1.9rem; letter-spacing: 1px; }
   header p { opacity: 0.85; font-style: italic; margin-top: 4px; }
   header img.burgee { height: 70px; display: block; margin: 0 auto 10px; background: white; padding: 6px; border-radius: 8px; }
-  .play-btn {
-    display: block; margin-top: 8px; background: var(--navy); color: white; border: none;
-    border-radius: 6px; padding: 7px 16px; font-family: inherit; font-size: 0.95rem; cursor: pointer;
-  }
-  .play-btn:hover { background: var(--blue); }
   nav {
     display: flex;
     justify-content: center;
@@ -81,11 +76,8 @@
   .knot-when { background: var(--sky); border-left: 4px solid var(--blue); padding: 8px 12px; border-radius: 0 6px 6px 0; margin-top: 8px; font-size: 0.95rem; }
   .knot-layout { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; margin-top: 8px; }
   .knot-steps { flex: 1; min-width: 220px; }
-  svg.knot { flex: 0 0 auto; }
-  .rope { fill: none; stroke: #c87f3a; stroke-width: 7; stroke-linecap: round; }
-  .rope2 { fill: none; stroke: #b03a2e; stroke-width: 7; stroke-linecap: round; }
-  .halo { fill: none; stroke: #eef5fb; stroke-width: 13; stroke-linecap: round; }
-  .knot-label { font-family: Arial, sans-serif; font-size: 11px; fill: #556; }
+  .knot-video { flex: 0 0 340px; max-width: 100%; aspect-ratio: 16 / 9; }
+  .knot-video iframe { width: 100%; height: 100%; border: 0; border-radius: 8px; }
   h3 { color: var(--navy); margin-bottom: 8px; }
   input[type=range] { width: 100%; margin: 14px 0 4px; }
   .slider-label { text-align: center; font-size: 0.9rem; color: #666; }
@@ -296,25 +288,12 @@
 <!-- ============ KNOTS ============ -->
 <section id="knots">
   <h2>Five Knots That Cover 95% of Sailing</h2>
-  <p class="intro">Practice these at home with any piece of rope until you can tie them without looking. That's not a joke — you'll often need them with cold wet hands while the boat bounces. Press <b>Watch it tie</b> under each diagram to see the rope draw itself in tying order, and use the video link for a real-rope demonstration on <a href="https://www.animatedknots.com/complete-knot-list" target="_blank">Animated Knots by Grog</a>.</p>
+  <p class="intro">Practice these at home with any piece of rope until you can tie them without looking. That's not a joke — you'll often need them with cold wet hands while the boat bounces. Each knot below has the real tying video from <a href="https://www.animatedknots.com/complete-knot-list" target="_blank">Animated Knots by Grog</a>.</p>
 
   <div class="card">
     <h3>1. Figure-Eight (stopper knot)</h3>
     <div class="knot-layout">
-      <div>
-        <svg class="knot" id="k-fig8" viewBox="0 0 170 180" width="160" aria-label="Figure-eight knot diagram">
-          <rect width="170" height="180" rx="8" fill="#eef5fb"/>
-          <path class="rope" data-step="1" d="M 85 12 V 34"/>
-          <circle class="rope" data-step="2" cx="85" cy="58" r="24"/>
-          <circle class="halo" data-step="3" cx="85" cy="104" r="24"/>
-          <circle class="rope" data-step="3" cx="85" cy="104" r="24"/>
-          <path class="halo" data-step="4" d="M 85 128 C 92 142 102 150 114 156"/>
-          <path class="rope" data-step="4" d="M 85 128 C 92 142 102 150 114 156"/>
-          <text class="knot-label" x="95" y="18">standing part</text>
-          <text class="knot-label" x="92" y="172">working end</text>
-        </svg>
-        <button class="play-btn" onclick="animateKnot('k-fig8')">▶ Watch it tie</button>
-      </div>
+      <div class="knot-video"><iframe src="https://www.youtube.com/embed/EtzeIQjcKEs?rel=0" title="How to tie a Figure-Eight Knot — video by Animated Knots by Grog" loading="lazy" allowfullscreen></iframe></div>
       <div class="knot-steps">
         <ol class="steps">
           <li>Make a loop near the end of the line, crossing the end <i>over</i> the standing part.</li>
@@ -329,32 +308,7 @@
   <div class="card">
     <h3>2. Bowline ("BOH-lin")</h3>
     <div class="knot-layout">
-      <div>
-        <svg class="knot" id="k-bowline" viewBox="0 0 200 215" width="185" aria-label="Bowline knot diagram">
-          <rect width="200" height="215" rx="8" fill="#eef5fb"/>
-          <!-- around the tree (passes behind the standing part) -->
-          <path class="rope" data-step="4" d="M 98 58 C 100 34 70 34 74 56"/>
-          <!-- standing part (the tree) -->
-          <path class="halo" data-step="1" d="M 88 10 V 110"/>
-          <path class="rope" data-step="1" d="M 88 10 V 110"/>
-          <!-- the hole -->
-          <circle class="halo" data-step="2" cx="88" cy="66" r="17"/>
-          <circle class="rope" data-step="2" cx="88" cy="66" r="17"/>
-          <!-- big loop -->
-          <circle class="rope" data-step="2" cx="95" cy="152" r="40"/>
-          <!-- rabbit up through the hole -->
-          <path class="halo" data-step="3" d="M 124 122 C 126 92 100 84 98 58"/>
-          <path class="rope" data-step="3" d="M 124 122 C 126 92 100 84 98 58"/>
-          <!-- rabbit back down the hole -->
-          <path class="halo" data-step="5" d="M 74 56 C 76 78 80 94 81 114"/>
-          <path class="rope" data-step="5" d="M 74 56 C 76 78 80 94 81 114"/>
-          <text class="knot-label" x="98" y="20">the tree</text>
-          <text class="knot-label" x="14" y="70">the hole</text>
-          <text class="knot-label" x="138" y="116">the rabbit</text>
-          <text class="knot-label" x="80" y="156">loop</text>
-        </svg>
-        <button class="play-btn" onclick="animateKnot('k-bowline')">▶ Watch it tie</button>
-      </div>
+      <div class="knot-video"><iframe src="https://www.youtube.com/embed/YXRnPES0Qec?rel=0" title="How to tie a Bowline — video by Animated Knots by Grog" loading="lazy" allowfullscreen></iframe></div>
       <div class="knot-steps">
         <ol class="steps">
           <li>Make a small loop ("the rabbit hole") with the standing part on the bottom.</li>
@@ -370,31 +324,7 @@
   <div class="card">
     <h3>3. Cleat Hitch</h3>
     <div class="knot-layout">
-      <div>
-        <svg class="knot" id="k-cleat" viewBox="0 0 210 150" width="200" aria-label="Cleat hitch diagram">
-          <rect width="210" height="150" rx="8" fill="#eef5fb"/>
-          <!-- cleat base -->
-          <rect x="96" y="90" width="14" height="28" fill="#6b7b8a"/>
-          <!-- full turn around the base -->
-          <path class="rope" data-step="1" d="M 8 130 C 45 122 70 120 90 116"/>
-          <path class="rope" data-step="2" d="M 90 116 C 112 134 134 130 146 114"/>
-          <!-- horn bar -->
-          <rect x="45" y="74" width="116" height="16" rx="8" fill="#8a9aa8" stroke="#5a6b7a" stroke-width="1.5"/>
-          <!-- figure-eight over the horns -->
-          <path class="halo" data-step="3" d="M 146 114 L 64 70"/>
-          <path class="rope" data-step="3" d="M 146 114 L 64 70"/>
-          <path class="rope" data-step="4" d="M 64 70 C 40 60 34 96 58 98"/>
-          <path class="halo" data-step="5" d="M 58 98 L 146 68"/>
-          <path class="rope" data-step="5" d="M 58 98 L 146 68"/>
-          <path class="rope" data-step="6" d="M 146 68 C 170 62 174 94 152 96"/>
-          <!-- locking tuck -->
-          <path class="halo" data-step="7" d="M 152 96 C 140 98 136 90 142 82"/>
-          <path class="rope" data-step="7" d="M 152 96 C 140 98 136 90 142 82"/>
-          <text class="knot-label" x="8" y="144">to the load</text>
-          <text class="knot-label" x="130" y="142">locking hitch</text>
-        </svg>
-        <button class="play-btn" onclick="animateKnot('k-cleat')">▶ Watch it tie</button>
-      </div>
+      <div class="knot-video"><iframe src="https://www.youtube.com/embed/QrpTzqFQV7c?rel=0" title="How to tie a Cleat Hitch — video by Animated Knots by Grog" loading="lazy" allowfullscreen></iframe></div>
       <div class="knot-steps">
         <ol class="steps">
           <li>Take a full turn around the base of the cleat.</li>
@@ -409,34 +339,7 @@
   <div class="card">
     <h3>4. Round Turn &amp; Two Half Hitches</h3>
     <div class="knot-layout">
-      <div>
-        <svg class="knot" id="k-roundturn" viewBox="0 0 210 150" width="200" aria-label="Round turn and two half hitches diagram">
-          <rect width="210" height="150" rx="8" fill="#eef5fb"/>
-          <!-- post -->
-          <rect x="26" y="8" width="20" height="134" rx="4" fill="#8a9aa8" stroke="#5a6b7a" stroke-width="1.5"/>
-          <!-- standing part to the load -->
-          <path class="halo" data-step="1" d="M 52 64 C 100 78 150 80 202 78"/>
-          <path class="rope" data-step="1" d="M 52 64 C 100 78 150 80 202 78"/>
-          <!-- round turn (two wraps) -->
-          <ellipse class="halo" data-step="2" cx="36" cy="42" rx="19" ry="8"/>
-          <ellipse class="rope" data-step="2" cx="36" cy="42" rx="19" ry="8"/>
-          <ellipse class="halo" data-step="3" cx="36" cy="60" rx="19" ry="8"/>
-          <ellipse class="rope" data-step="3" cx="36" cy="60" rx="19" ry="8"/>
-          <!-- working end runs to the hitches -->
-          <path class="rope" data-step="4" d="M 50 48 C 78 60 92 70 102 76"/>
-          <!-- two half hitches around the standing part -->
-          <circle class="halo" data-step="5" cx="112" cy="78" r="12"/>
-          <circle class="rope" data-step="5" cx="112" cy="78" r="12"/>
-          <circle class="halo" data-step="6" cx="146" cy="79" r="12"/>
-          <circle class="rope" data-step="6" cx="146" cy="79" r="12"/>
-          <!-- tail -->
-          <path class="rope" data-step="7" d="M 154 88 L 176 96"/>
-          <text class="knot-label" x="62" y="26">round turn</text>
-          <text class="knot-label" x="98" y="112">two half hitches</text>
-          <text class="knot-label" x="166" y="64">to load</text>
-        </svg>
-        <button class="play-btn" onclick="animateKnot('k-roundturn')">▶ Watch it tie</button>
-      </div>
+      <div class="knot-video"><iframe src="https://www.youtube.com/embed/FqxESYQWTdQ?rel=0" title="How to tie a Round Turn and Two Half Hitches — video by Animated Knots by Grog" loading="lazy" allowfullscreen></iframe></div>
       <div class="knot-steps">
         <ol class="steps">
           <li>Wrap the line fully around the post or rail (the round turn takes the load).</li>
@@ -451,22 +354,7 @@
   <div class="card">
     <h3>5. Square (Reef) Knot</h3>
     <div class="knot-layout">
-      <div>
-        <svg class="knot" id="k-square" viewBox="0 0 210 120" width="200" aria-label="Square knot diagram">
-          <rect width="210" height="120" rx="8" fill="#eef5fb"/>
-          <!-- right rope (red) -->
-          <path class="rope2" data-step="1" d="M 200 50 L 118 50 C 90 50 90 82 118 82 L 200 82"/>
-          <!-- left rope (tan) weaves over -->
-          <path class="halo" data-step="2" d="M 10 42 L 102 42 C 130 42 130 74 102 74 L 10 74"/>
-          <path class="rope" data-step="2" d="M 10 42 L 102 42 C 130 42 130 74 102 74 L 10 74"/>
-          <!-- red passes back over tan at the bottom (alternating weave) -->
-          <path class="halo" data-step="3" d="M 97 66 C 97 76 104 82 118 82"/>
-          <path class="rope2" data-step="3" d="M 97 66 C 97 76 104 82 118 82"/>
-          <text class="knot-label" x="14" y="32">left rope</text>
-          <text class="knot-label" x="146" y="104">right rope</text>
-        </svg>
-        <button class="play-btn" onclick="animateKnot('k-square')">▶ Watch it tie</button>
-      </div>
+      <div class="knot-video"><iframe src="https://www.youtube.com/embed/0Y_iorha2k4?rel=0" title="How to tie a Square Knot — video by Animated Knots by Grog" loading="lazy" allowfullscreen></iframe></div>
       <div class="knot-steps">
         <ol class="steps">
           <li>Right end over left, and under.</li>
@@ -732,33 +620,6 @@ function resetQuiz() {
   showQuiz();
 }
 showQuiz();
-
-/* ---------- knot animations ---------- */
-function animateKnot(svgId) {
-  const svg = document.getElementById(svgId);
-  const els = [...svg.querySelectorAll('[data-step]')];
-  // hide everything instantly
-  els.forEach(el => {
-    const L = el.getTotalLength();
-    el.style.transition = 'none';
-    el.style.strokeDasharray = L;
-    el.style.strokeDashoffset = L;
-  });
-  svg.getBoundingClientRect(); // force reflow so the reset applies before animating
-  const steps = [...new Set(els.map(e => +e.dataset.step))].sort((a, b) => a - b);
-  let delay = 120;
-  steps.forEach(st => {
-    const group = els.filter(e => +e.dataset.step === st);
-    const dur = Math.max(...group.map(e => e.getTotalLength())) * 8; // ms — slow enough to follow
-    group.forEach(e => {
-      setTimeout(() => {
-        e.style.transition = `stroke-dashoffset ${dur}ms linear`;
-        e.style.strokeDashoffset = 0;
-      }, delay);
-    });
-    delay += dur + 250; // pause between steps
-  });
-}
 
 /* ---------- glossary ---------- */
 const glossary = [
