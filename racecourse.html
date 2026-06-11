@@ -13,7 +13,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: Georgia, 'Times New Roman', serif; background: var(--sand); color: var(--text); line-height: 1.5; }
   header { background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 100%); color: white; padding: 22px 20px 16px; text-align: center; }
-  header img.burgee { height: 56px; display: block; margin: 0 auto 8px; background: white; padding: 5px; border-radius: 8px; }
+  svg.burgee { display: block; margin: 0 auto 8px; }
   header h1 { font-size: 1.7rem; letter-spacing: 1px; }
   header p { opacity: 0.85; font-style: italic; margin-top: 2px; }
   header a { color: #cfdce8; font-size: 0.9rem; }
@@ -56,7 +56,13 @@
 <body>
 
 <header>
-  <img class="burgee" src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt="CLSA burgee">
+  <svg class="burgee" viewBox="0 0 100 60" height="54" aria-label="CLSA burgee">
+    <polygon points="4,4 96,12 78,30 96,48 4,56" fill="#2e6da4" stroke="#ffffff" stroke-width="2.5"/>
+    <circle cx="34" cy="30" r="15" fill="#ffffff"/>
+    <path d="M 33 19 L 33 33 L 24 33 Z" fill="#2e6da4"/>
+    <path d="M 36 22 L 36 33 L 42 33 Z" fill="#2e6da4"/>
+    <path d="M 23 36 L 43 36 L 39 41 L 27 41 Z" fill="#2e6da4"/>
+  </svg>
   <h1>Race Day at Cowan Lake</h1>
   <p>Live wind brief &amp; course visualizer — Cowan Lake Sailing Association</p>
   <a href="index.html">&larr; back to Learn to Sail</a>
@@ -84,7 +90,7 @@
     <button class="live-btn" id="use-live" style="display:none">Use live wind</button>
   </div>
 
-  <svg id="lake" viewBox="0 0 1000 470" width="100%" aria-label="Stylized map of Cowan Lake with race course overlay">
+  <svg id="lake" viewBox="0 0 1000 470" width="100%" aria-label="Map of Cowan Lake with race course overlay">
     <rect width="1000" height="470" fill="#f2f6f9" rx="12"/>
     <g font-family="Arial" font-size="13" fill="#8aa">
       <text x="500" y="20" text-anchor="middle">N</text>
@@ -103,15 +109,15 @@
     <span><svg width="14" height="13"><polygon points="7,1 13,12 1,12" fill="#27ae60" stroke="#1e8449"/></svg> finish</span>
     <span><svg width="16" height="12"><rect x="1" y="3" width="14" height="7" rx="3" fill="#fff" stroke="#1a3a5c" stroke-width="1.5"/></svg> RC boat</span>
     <span><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="#1a3a5c"/></svg> start pin</span>
-    <span style="color:#2e6da4">→ sailing direction</span>
+    <span style="color:#2e6da4">⌁ dashed track shows the roundings</span>
     <span><b>Drag any mark</b> to fine-tune — changing wind or course resets the layout.</span>
   </div>
-  <div class="map-note">Lake shape is stylized (after the CLSA shirt graphic) — not for navigation. The RC sets the real course.</div>
+  <div class="map-note">Outline traced from the lake map (vertically exaggerated a touch for clarity) — not for navigation. Windward and offset are shown rounded to port; the gate can be taken either way. The RC sets the real course.</div>
 </div>
 
 <div class="card">
   <h2>Reading the Course</h2>
-  <p><b>Start:</b> cross the line between the committee boat and the pin, sailing upwind. <b>Windward mark:</b> round to port, then the short hop to the small yellow <b>offset mark</b> keeps boats clear of traffic still beating up. <b>Leeward gate:</b> two orange tetrahedrons — pick either one, round it the natural way, and head back upwind. Choosing the gate side that takes you toward the favored side of the next beat is free distance. <b>Finish:</b> between the committee boat and the green mark off its starboard side.</p>
+  <p><b>Start:</b> cross the line between the committee boat and the pin, sailing upwind. <b>Windward mark:</b> leave it to port, then the short hop to the small yellow <b>offset mark</b> keeps boats clear of traffic still beating up. <b>Leeward gate:</b> two orange tetrahedrons — pick either one, round it the natural way, and head back upwind. Choosing the gate side that takes you toward the favored side of the next beat is free distance. <b>Finish:</b> between the committee boat and the green mark off its starboard side.</p>
   <p><b>Triangle (Olympic):</b> beat to the windward mark, bear away onto the reach to the <b>jibe mark</b>, jibe, reach back to the leeward mark, and beat again. Reaches reward clear air — defend high early, then drive low for speed.</p>
 </div>
 
@@ -120,48 +126,27 @@
 <script>
 /* =====================================================================
    LAKE CONFIG — to make this page for another lake, replace this object
-   (outline path, labels, islands, race area center) and the title text.
+   (outline path, labels, islands, race area center) and the title text,
+   plus the forecast lat/lon in the API constant below.
    ===================================================================== */
 const LAKE = {
   name: "Cowan Lake",
-  // stylized outline, roughly WSW–ENE like the real lake
-  path: `M 68 310
-         C 64 268 96 244 142 250
-         C 168 206 228 190 288 200
-         C 342 190 402 196 452 212
-         C 482 200 516 184 540 192
-         C 552 206 540 224 520 236
-         C 566 228 616 226 656 234
-         C 672 200 700 172 722 180
-         C 734 194 722 218 698 234
-         C 746 228 796 234 836 246
-         C 876 242 916 256 940 276
-         C 952 288 945 298 928 302
-         C 898 306 868 302 846 298
-         C 868 312 898 318 918 330
-         C 926 342 910 350 890 346
-         C 848 338 808 328 768 324
-         C 728 332 678 336 638 328
-         C 598 338 558 342 522 334
-         C 478 348 432 354 392 346
-         C 356 372 330 396 300 406
-         C 264 414 224 408 194 394
-         C 150 378 110 358 88 342
-         C 72 330 70 320 68 310 Z`,
-  islands: [ { cx: 656, cy: 282, rx: 14, ry: 7, label: "George Island", lx: 656, ly: 266 } ],
+  // traced from the lake map; viewBox 1000x470, slight vertical exaggeration
+  path: `M 98 175 C 97 166 109 159 120 158 C 131 156 152 167 165 164 C 178 162 189 150 198 140 C 206 130 209 120 215 105 C 221 90 229 57 235 52 C 241 48 245 68 250 77 C 255 86 260 106 265 105 C 270 104 275 80 280 70 C 285 60 290 45 295 42 C 300 39 305 44 310 52 C 315 61 318 81 325 91 C 332 101 343 103 350 112 C 357 121 355 139 365 147 C 375 155 398 164 410 161 C 422 158 429 135 440 126 C 451 117 466 110 475 108 C 484 107 488 113 495 119 C 502 125 511 140 520 147 C 529 154 538 162 550 161 C 562 160 578 147 590 140 C 602 133 610 124 620 119 C 630 114 638 104 650 112 C 662 120 678 154 690 168 C 702 182 711 189 725 196 C 739 203 756 204 775 210 C 794 216 819 224 840 231 C 861 238 880 244 900 252 C 920 260 947 272 960 280 C 973 288 986 293 980 298 C 974 302 942 307 925 308 C 908 309 892 298 880 301 C 868 304 862 316 850 329 C 838 342 824 364 810 378 C 796 392 777 413 765 413 C 753 413 752 388 740 378 C 728 368 707 358 690 350 C 673 342 659 332 640 329 C 621 326 595 330 575 329 C 555 328 537 328 520 326 C 503 323 489 313 475 312 C 461 310 449 320 435 318 C 421 317 402 302 390 301 C 378 300 372 307 360 312 C 348 316 332 324 320 329 C 308 334 298 342 288 340 C 278 337 270 323 260 315 C 250 307 236 298 225 290 C 214 284 207 281 195 273 C 183 265 167 252 155 241 C 143 231 135 221 125 210 C 115 199 98 184 98 175 Z`,
+  islands: [ { cx: 562, cy: 237, rx: 9, ry: 5, label: "George Island", lx: 562, ly: 222 } ],
   labels: [
-    { x: 104, y: 368, text: "Marina" },
-    { x: 232, y: 428, text: "CLSA", dot: { x: 226, y: 408 } },
-    { x: 520, y: 358, text: "Public Beach" },
-    { x: 540, y: 176, text: "Beach" },
-    { x: 726, y: 164, text: "Campground" },
-    { x: 852, y: 226, text: "Cowan Lake State Park" }
+    { x: 86, y: 158, text: "Spillway" },
+    { x: 286, y: 358, text: "Marina" },
+    { x: 352, y: 336, text: "CLSA", dot: { x: 346, y: 308 } },
+    { x: 478, y: 94, text: "Campground" },
+    { x: 700, y: 100, text: "Cowan Lake State Park" },
+    { x: 800, y: 408, text: "Emerald Woods" }
   ],
-  race: { x: 290, y: 305 }   // race area center (west basin)
+  race: { x: 445, y: 215 }   // open water west of George Island
 };
 
 const CX = LAKE.race.x, CY = LAKE.race.y;
-const L = 150;               // beat length, px (stretched)
+const L = 130;               // beat length, px
 
 /* ---------------- draw the lake ---------------- */
 (function drawLake() {
@@ -181,7 +166,7 @@ const L = 150;               // beat length, px (stretched)
 let windDir = 225;
 let liveDir = null, liveSpd = null, liveGust = null;
 let course = 'wl';
-let marks = {};          // id -> {x, y}
+let marks = {};
 let dragging = null;
 
 /* ---------------- helpers ---------------- */
@@ -189,6 +174,9 @@ const rad = d => d * Math.PI / 180;
 function vec(b) { return { x: Math.sin(rad(b)), y: -Math.cos(rad(b)) }; }
 function pt(o, v, d) { return { x: o.x + v.x * d, y: o.y + v.y * d }; }
 function mid(a, b) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; }
+function norm(a, b) { const dx = b.x - a.x, dy = b.y - a.y, l = Math.hypot(dx, dy) || 1; return { x: dx / l, y: dy / l }; }
+function rotCW(v)  { return { x: -v.y, y: v.x }; }
+function rotCCW(v) { return { x: v.y, y: -v.x }; }
 function compass16(d) {
   const n = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
   return n[Math.round(d / 22.5) % 16];
@@ -203,22 +191,21 @@ function dirArrowSVG(deg, size, color) {
 /* ---------------- course layout (computed from wind) ---------------- */
 function layout() {
   const u = vec(windDir);
-  const pcw = { x: -u.y, y: u.x };   // starboard side, facing upwind
-  const pl  = { x: u.y, y: -u.x };   // port side
+  const pcw = rotCW(u), pl = rotCCW(u);
   const C = { x: CX, y: CY };
   const S = pt(C, u, -L * 0.5);
   marks = {};
   marks.W   = pt(C, u, L * 0.5);
   marks.RC  = pt(S, pcw, 38);
   marks.PIN = pt(S, pl, 38);
-  marks.F   = pt(marks.RC, pcw, 26);            // finish: green, starboard of RC
+  marks.F   = pt(marks.RC, pcw, 26);
   if (course === 'wl') {
-    marks.O  = pt(marks.W, pl, 28);             // offset: small yellow, port of W
-    marks.G1 = pt(pt(S, u, 30), pl, 22);        // gate
+    marks.O  = pt(marks.W, pl, 28);
+    marks.G1 = pt(pt(S, u, 30), pl, 22);
     marks.G2 = pt(pt(S, u, 30), pcw, 22);
   } else {
-    marks.J   = pt(C, pl, L * 0.55);            // jibe mark
-    marks.LEE = pt(S, u, 30);                   // leeward mark
+    marks.J   = pt(C, pl, L * 0.55);
+    marks.LEE = pt(S, u, 30);
   }
 }
 
@@ -229,25 +216,65 @@ function tetra(p, size, fill, stroke, label, dy) {
             fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>` +
     (label ? `<text x="${p.x}" y="${p.y + (dy || 24)}" text-anchor="middle" font-family="Arial" font-size="11" fill="#445">${label}</text>` : "");
 }
-function leg(a, b) {
+function arrowAt(a, b) {
   const m = mid(a, b);
   const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
-  return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#2e6da4" stroke-width="2" stroke-dasharray="6 5" opacity="0.85"/>
-    <polygon points="-7,-4 -7,4 2,0" transform="translate(${m.x} ${m.y}) rotate(${ang})" fill="#2e6da4"/>`;
+  return `<polygon points="-7,-4 -7,4 2,0" transform="translate(${m.x} ${m.y}) rotate(${ang})" fill="#2e6da4"/>`;
+}
+/* waypoints that take the track around a mark left-to-port */
+function roundPort(m, inDir, r, full) {
+  const wps = [pt(m, rotCW(inDir), r), pt(m, inDir, r)];
+  if (full) wps.push(pt(m, rotCCW(inDir), r));
+  return wps;
+}
+function trackPath(wps) {
+  let d = `M ${wps[0].x.toFixed(1)} ${wps[0].y.toFixed(1)}`;
+  for (let i = 1; i < wps.length; i++) d += ` L ${wps[i].x.toFixed(1)} ${wps[i].y.toFixed(1)}`;
+  return `<path d="${d}" fill="none" stroke="#2e6da4" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round" opacity="0.9"/>`;
+}
+function boatSVG(p, headingDeg) {
+  return `<g transform="translate(${p.x} ${p.y}) rotate(${headingDeg})">
+    <path d="M 0 -14 C 5 -9 6 4 4.5 13 L -4.5 13 C -6 4 -5 -9 0 -14 Z" fill="#fdfaf2" stroke="#1a3a5c" stroke-width="1.5"/>
+    <path d="M 0 -5 C 4.5 -1 6.5 5 6.5 10 C 3 7 1 1 0 -5 Z" fill="#fff" stroke="#8aa4bd" stroke-width="1"/>
+    <line x1="0" y1="-5" x2="6.5" y2="10" stroke="#5d4a36" stroke-width="1.5"/>
+    <circle cx="0" cy="-5" r="1.6" fill="#1a3a5c"/>
+  </g>`;
 }
 function render() {
+  const u = vec(windDir);
+  const pcw = rotCW(u), pl = rotCCW(u);
   const S = mid(marks.RC, marks.PIN);
   let s = "";
-  // start line
+  // start & finish lines
   s += `<line x1="${marks.RC.x}" y1="${marks.RC.y}" x2="${marks.PIN.x}" y2="${marks.PIN.y}" stroke="#1a3a5c" stroke-width="1.5" stroke-dasharray="3 4"/>`;
-  // finish line RC -> F
   s += `<line x1="${marks.RC.x}" y1="${marks.RC.y}" x2="${marks.F.x}" y2="${marks.F.y}" stroke="#27ae60" stroke-width="1.5" stroke-dasharray="3 4"/>`;
-  // legs
+
+  // sailing track with roundings
+  let wps = [S];
+  wps.push(...roundPort(marks.W, u, 14));                       // windward: to port
   if (course === 'wl') {
-    s += leg(S, marks.W) + leg(marks.W, marks.O) + leg(marks.O, mid(marks.G1, marks.G2));
+    const wExit = wps[wps.length - 1];
+    wps.push(...roundPort(marks.O, norm(wExit, marks.O), 11));  // offset: shown to port
+    const gm = mid(marks.G1, marks.G2);
+    const oExit = wps[wps.length - 1];
+    wps.push(gm);                                               // through the gate…
+    wps.push(...roundPort(marks.G2, norm(oExit, gm), 15, true)); // …around one gate mark (either works)
+    wps.push(pt(wps[wps.length - 1], u, 26));
+    s += trackPath(wps);
+    s += arrowAt(S, marks.W) + arrowAt(oExit, gm) + arrowAt(wps[wps.length - 2], wps[wps.length - 1]);
   } else {
-    s += leg(S, marks.W) + leg(marks.W, marks.J) + leg(marks.J, marks.LEE);
+    const wExit = wps[wps.length - 1];
+    wps.push(...roundPort(marks.J, norm(wExit, marks.J), 14));  // jibe mark
+    const jExit = wps[wps.length - 1];
+    wps.push(...roundPort(marks.LEE, norm(jExit, marks.LEE), 14, true));
+    wps.push(pt(wps[wps.length - 1], u, 26));
+    s += trackPath(wps);
+    s += arrowAt(S, marks.W) + arrowAt(wExit, marks.J) + arrowAt(jExit, marks.LEE);
   }
+
+  // little boat beating up the first leg
+  s += boatSVG(pt(mid(S, marks.W), pcw, 22), windDir + 42);
+
   // marks
   s += tetra(marks.W, 9, "#e67e22", "#b35c0e", "windward");
   if (course === 'wl') {
@@ -272,14 +299,13 @@ function render() {
         <text x="${marks.PIN.x}" y="${marks.PIN.y + 20}" text-anchor="middle" font-family="Arial" font-size="11" fill="#445">pin</text>`;
   document.getElementById('course').innerHTML = s;
 
-  // wind arrow: drawn upwind of the course, label kept upright (positioned by math, never rotated)
-  const u = vec(windDir);
-  const tail = pt({ x: CX, y: CY }, u, L * 0.5 + 64);
-  const head = pt({ x: CX, y: CY }, u, L * 0.5 + 26);
-  const tip  = pt({ x: CX, y: CY }, u, L * 0.5 + 14);
-  const perp = { x: -u.y, y: u.x };
+  // wind arrow + upright label
+  const tail = pt({ x: CX, y: CY }, u, L * 0.5 + 62);
+  const head = pt({ x: CX, y: CY }, u, L * 0.5 + 28);
+  const tip  = pt({ x: CX, y: CY }, u, L * 0.5 + 16);
+  const perp = rotCW(u);
   const b1 = pt(head, perp, 9), b2 = pt(head, perp, -9);
-  const lab = pt({ x: CX, y: CY }, u, L * 0.5 + 86);
+  const lab = pt({ x: CX, y: CY }, u, L * 0.5 + 84);
   document.getElementById('wind-arrow').innerHTML =
     `<line x1="${tail.x}" y1="${tail.y}" x2="${head.x}" y2="${head.y}" stroke="#2e6da4" stroke-width="4"/>
      <polygon points="${b1.x},${b1.y} ${b2.x},${b2.y} ${tip.x},${tip.y}" fill="#2e6da4"/>
