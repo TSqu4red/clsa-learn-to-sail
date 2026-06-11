@@ -293,13 +293,13 @@ function render() {
         <text x="${marks.PIN.x}" y="${marks.PIN.y + 20}" text-anchor="middle" font-family="Arial" font-size="11" fill="#445">pin</text>`;
   document.getElementById('course').innerHTML = s;
 
-  // wind arrow + upright label
-  const tail = pt({ x: CX, y: CY }, u, L * 0.5 + 62);
-  const head = pt({ x: CX, y: CY }, u, L * 0.5 + 28);
-  const tip  = pt({ x: CX, y: CY }, u, L * 0.5 + 16);
+  // wind arrow + upright label — anchored to the windward mark, follows it when dragged
+  const tail = pt(marks.W, u, 60);
+  const head = pt(marks.W, u, 26);
+  const tip  = pt(marks.W, u, 14);
   const perp = rotCW(u);
   const b1 = pt(head, perp, 9), b2 = pt(head, perp, -9);
-  const lab = pt({ x: CX, y: CY }, u, L * 0.5 + 84);
+  const lab = pt(marks.W, u, 80);
   document.getElementById('wind-arrow').innerHTML =
     `<line x1="${tail.x}" y1="${tail.y}" x2="${head.x}" y2="${head.y}" stroke="#2e6da4" stroke-width="4"/>
      <polygon points="${b1.x},${b1.y} ${b2.x},${b2.y} ${tip.x},${tip.y}" fill="#2e6da4"/>
