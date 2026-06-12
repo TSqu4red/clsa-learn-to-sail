@@ -207,7 +207,7 @@ function layout() {
   marks.RC  = pt(S, pcw, 38);
   marks.PIN = pt(S, pl, 38);
   marks.F   = pt(marks.RC, pcw, 26);
-  if (!boat) boat = { x: S.x - u.x * 26 + pcw.x * 12, y: S.y - u.y * 26 + pcw.y * 12, heading: windDir + 45 };
+  if (!boat) boat = { x: S.x - u.x * 22, y: S.y - u.y * 22, heading: windDir + 45 };   // pre-start, mid-line between pin and RC
   if (course === 'wl') {
     marks.O  = pt(marks.W, pl, 28);
     marks.G1 = pt(pt(S, u, 30), pl, 22);
