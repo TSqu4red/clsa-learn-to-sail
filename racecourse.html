@@ -104,7 +104,7 @@
     <span><svg width="14" height="13"><polygon points="7,1 13,12 1,12" fill="#27ae60" stroke="#1e8449"/></svg> finish</span>
     <span><svg width="16" height="12"><rect x="1" y="3" width="14" height="7" rx="3" fill="#fff" stroke="#1a3a5c" stroke-width="1.5"/></svg> RC boat</span>
     <span><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="#1a3a5c"/></svg> start pin</span>
-    <span style="color:#2e6da4">⌁ dashed track shows the roundings</span>
+    <span style="color:#8fb8d8">⌁ faint dashed line = course route (a guide — your wake is the real path)</span>
     <span><b>Drag the boat to sail!</b> Its wake trails behind, the sail trims itself, and tacks &amp; jibes get labeled. A <span style="color:#c0392b">red wake</span> means you're in the no-go zone. Drag marks to fine-tune, grab the dashed line to slide the whole course.</span>
   </div>
   <div class="map-note">Outline traced from the lake map (vertically exaggerated a touch for clarity) — not for navigation. Windward and offset are shown rounded to port; the gate can be taken either way. The RC sets the real course.</div>
@@ -228,7 +228,7 @@ function tetra(p, size, fill, stroke, label, dy) {
 function arrowAt(a, b) {
   const m = mid(a, b);
   const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
-  return `<polygon points="-7,-4 -7,4 2,0" transform="translate(${m.x} ${m.y}) rotate(${ang})" fill="#2e6da4"/>`;
+  return `<polygon points="-7,-4 -7,4 2,0" transform="translate(${m.x} ${m.y}) rotate(${ang})" fill="#aecde5"/>`;
 }
 /* waypoints that take the track around a mark left-to-port */
 function roundPort(m, inDir, r, full) {
@@ -236,10 +236,14 @@ function roundPort(m, inDir, r, full) {
   if (full) wps.push(pt(m, rotCCW(inDir), r));
   return wps;
 }
+const ROUTE = '#aecde5';   // course route: a faint guide, not the path you actually sail
 function trackPath(wps) {
   let d = `M ${wps[0].x.toFixed(1)} ${wps[0].y.toFixed(1)}`;
   for (let i = 1; i < wps.length; i++) d += ` L ${wps[i].x.toFixed(1)} ${wps[i].y.toFixed(1)}`;
-  return `<path d="${d}" fill="none" stroke="#2e6da4" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round" opacity="0.9"/>`;
+  return `<path d="${d}" fill="none" stroke="${ROUTE}" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round"/>`;
+}
+function roundStarboard(m, inDir, r) {  // waypoints leaving a mark to starboard
+  return [pt(m, rotCCW(inDir), r), pt(m, inDir, r), pt(m, rotCW(inDir), r)];
 }
 function windRel(heading) {            // signed angle heading-vs-wind: 0 = head to wind
   return ((heading - windDir + 540) % 360) - 180;
@@ -284,7 +288,8 @@ function render() {
   s += `<line x1="${marks.RC.x}" y1="${marks.RC.y}" x2="${marks.PIN.x}" y2="${marks.PIN.y}" stroke="#1a3a5c" stroke-width="1.5" stroke-dasharray="3 4"/>`;
   s += `<line x1="${marks.RC.x}" y1="${marks.RC.y}" x2="${marks.F.x}" y2="${marks.F.y}" stroke="#27ae60" stroke-width="1.5" stroke-dasharray="3 4"/>`;
 
-  // sailing track with roundings
+  // course route (faint): roundings shown, both gate options drawn
+  const polys = [];
   let wps = [S];
   wps.push(...roundPort(marks.W, u, 14));                       // windward: to port
   if (course === 'wl') {
@@ -293,16 +298,24 @@ function render() {
     const gm = mid(marks.G1, marks.G2);
     const oExit = wps[wps.length - 1];
     wps.push(gm);                                               // through the gate…
-    wps.push(...roundPort(marks.G2, norm(oExit, gm), 15, true)); // …around one gate mark (either works)
-    wps.push(pt(wps[wps.length - 1], u, 26));
-    s += trackPath(wps);
-    s += arrowAt(S, marks.W) + arrowAt(oExit, gm) + arrowAt(wps[wps.length - 2], wps[wps.length - 1]);
+    polys.push(wps);
+    const inG = norm(oExit, gm);
+    const left  = [gm, ...roundStarboard(marks.G1, inG, 15)];   // …round either mark
+    left.push(pt(left[left.length - 1], u, 26));
+    const right = [gm, ...roundPort(marks.G2, inG, 15, true)];
+    right.push(pt(right[right.length - 1], u, 26));
+    polys.push(left, right);
+    s += trackPath(wps) + trackPath(left) + trackPath(right);
+    s += arrowAt(S, marks.W) + arrowAt(oExit, gm)
+       + arrowAt(left[left.length - 2], left[left.length - 1])
+       + arrowAt(right[right.length - 2], right[right.length - 1]);
   } else {
     const wExit = wps[wps.length - 1];
     wps.push(...roundPort(marks.J, norm(wExit, marks.J), 14));  // jibe mark
     const jExit = wps[wps.length - 1];
     wps.push(...roundPort(marks.LEE, norm(jExit, marks.LEE), 14, true));
     wps.push(pt(wps[wps.length - 1], u, 26));
+    polys.push(wps);
     s += trackPath(wps);
     s += arrowAt(S, marks.W) + arrowAt(wExit, marks.J) + arrowAt(jExit, marks.LEE);
   }
@@ -337,7 +350,8 @@ function render() {
 
   // remember segments for whole-course dragging (track + start/finish lines)
   trackSegs = [];
-  for (let i = 1; i < wps.length; i++) trackSegs.push([wps[i - 1], wps[i]]);
+  for (const poly of polys)
+    for (let i = 1; i < poly.length; i++) trackSegs.push([poly[i - 1], poly[i]]);
   trackSegs.push([marks.RC, marks.PIN], [marks.RC, marks.F]);
 
   // wind arrow + upright label — anchored to the windward mark, follows it when dragged
