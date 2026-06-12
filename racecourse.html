@@ -176,6 +176,7 @@ let boat = null;      // {x, y, heading} — the user-sailed boat
 let trail = [];       // wake points {x, y, luff}
 let ann = [];         // tack/jibe annotations {x, y, t}
 let prevRel = null;   // last wind-relative angle, for tack/jibe detection
+let boatTouched = false;  // boat holds station at the start until first grabbed
 
 /* ---------------- helpers ---------------- */
 const rad = d => d * Math.PI / 180;
@@ -207,7 +208,7 @@ function layout() {
   marks.RC  = pt(S, pcw, 38);
   marks.PIN = pt(S, pl, 38);
   marks.F   = pt(marks.RC, pcw, 26);
-  if (!boat) boat = { x: S.x - u.x * 22, y: S.y - u.y * 22, heading: windDir + 45 };   // pre-start, mid-line between pin and RC
+  if (!boatTouched) boat = { x: S.x - u.x * 22, y: S.y - u.y * 22, heading: windDir + 45 };   // pre-start, mid-line between pin and RC
   if (course === 'wl') {
     marks.O  = pt(marks.W, pl, 28);
     marks.G1 = pt(pt(S, u, 30), pl, 22);
@@ -381,7 +382,7 @@ svg.addEventListener('pointerdown', e => {
   const p = svgPoint(e);
   // the boat gets first grab
   if (boat && Math.hypot(boat.x - p.x, boat.y - p.y) < 24) {
-    dragging = '__boat'; prevRel = windRel(boat.heading);
+    dragging = '__boat'; boatTouched = true; prevRel = windRel(boat.heading);
     svg.setPointerCapture(e.pointerId); e.preventDefault(); return;
   }
   let best = null, bestD = 20;
