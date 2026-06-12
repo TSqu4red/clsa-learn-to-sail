@@ -101,7 +101,7 @@
   <div class="legend">
     <span><svg width="14" height="13"><polygon points="7,1 13,12 1,12" fill="#e67e22" stroke="#b35c0e"/></svg> course mark</span>
     <span><svg width="11" height="10"><polygon points="5.5,1 10,9 1,9" fill="#f1c40f" stroke="#b7950b"/></svg> offset</span>
-    <span><svg width="14" height="13"><polygon points="7,1 13,12 1,12" fill="#27ae60" stroke="#1e8449"/></svg> finish</span>
+    <span><svg width="11" height="10"><polygon points="5.5,1 10,9 1,9" fill="#27ae60" stroke="#1e8449"/></svg> finish</span>
     <span><svg width="16" height="12"><rect x="1" y="3" width="14" height="7" rx="3" fill="#fff" stroke="#1a3a5c" stroke-width="1.5"/></svg> RC boat</span>
     <span><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="#1a3a5c"/></svg> start pin</span>
     <span style="color:#8fb8d8">⌁ faint dashed line = course route (a guide — your wake is the real path)</span>
@@ -336,7 +336,7 @@ function render() {
     s += tetra(marks.J, 9, "#e67e22", "#b35c0e", "jibe");
     s += tetra(marks.LEE, 9, "#e67e22", "#b35c0e", "leeward");
   }
-  s += tetra(marks.F, 8, "#27ae60", "#1e8449", "finish", 22);
+  s += tetra(marks.F, 6, "#27ae60", "#1e8449", "finish", 18);
   // committee boat + pin
   s += `<g transform="translate(${marks.RC.x} ${marks.RC.y}) rotate(${windDir})">
           <rect x="-7" y="-12" width="14" height="24" rx="6" fill="#fff" stroke="#1a3a5c" stroke-width="2"/>
