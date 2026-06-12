@@ -17,7 +17,7 @@
   header h1 { font-size: 1.7rem; letter-spacing: 1px; }
   header p { opacity: 0.85; font-style: italic; margin-top: 2px; }
   header a { color: #cfdce8; font-size: 0.9rem; }
-  main { max-width: 1020px; margin: 0 auto; padding: 20px 14px 60px; }
+  main { max-width: 1260px; margin: 0 auto; padding: 20px 14px 60px; }
   h2 { color: var(--navy); margin-bottom: 6px; }
   .card { background: white; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 18px; }
   /* wind brief */
@@ -104,7 +104,7 @@
     <span><svg width="16" height="12"><rect x="1" y="3" width="14" height="7" rx="3" fill="#fff" stroke="#1a3a5c" stroke-width="1.5"/></svg> RC boat</span>
     <span><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="#1a3a5c"/></svg> start pin</span>
     <span style="color:#2e6da4">⌁ dashed track shows the roundings</span>
-    <span><b>Drag any mark</b> to fine-tune — changing wind or course resets the layout.</span>
+    <span><b>Drag any mark</b> to fine-tune, or <b>grab the dashed line</b> to slide the whole course — changing wind or course type resets the layout.</span>
   </div>
   <div class="map-note">Outline traced from the lake map (vertically exaggerated a touch for clarity) — not for navigation. Windward and offset are shown rounded to port; the gate can be taken either way. The RC sets the real course.</div>
 </div>
@@ -126,17 +126,23 @@
 const LAKE = {
   name: "Cowan Lake",
   // traced from the lake map; viewBox 1000x470, slight vertical exaggeration
-  path: `M 98 175 C 97 166 109 159 120 158 C 131 156 152 167 165 164 C 178 162 189 150 198 140 C 206 130 209 120 215 105 C 221 90 229 57 235 52 C 241 48 245 68 250 77 C 255 86 260 106 265 105 C 270 104 275 80 280 70 C 285 60 290 45 295 42 C 300 39 305 44 310 52 C 315 61 318 81 325 91 C 332 101 343 103 350 112 C 357 121 355 139 365 147 C 375 155 398 164 410 161 C 422 158 429 135 440 126 C 451 117 466 110 475 108 C 484 107 488 113 495 119 C 502 125 511 140 520 147 C 529 154 538 162 550 161 C 562 160 578 147 590 140 C 602 133 610 124 620 119 C 630 114 638 104 650 112 C 662 120 678 154 690 168 C 702 182 711 189 725 196 C 739 203 756 204 775 210 C 794 216 819 224 840 231 C 861 238 880 244 900 252 C 920 260 947 272 960 280 C 973 288 986 293 980 298 C 974 302 942 307 925 308 C 908 309 892 298 880 301 C 868 304 862 316 850 329 C 838 342 824 364 810 378 C 796 392 777 413 765 413 C 753 413 752 388 740 378 C 728 368 707 358 690 350 C 673 342 659 332 640 329 C 621 326 595 330 575 329 C 555 328 537 328 520 326 C 503 323 489 313 475 312 C 461 310 449 320 435 318 C 421 317 402 302 390 301 C 378 300 372 307 360 312 C 348 316 332 324 320 329 C 308 334 298 342 288 340 C 278 337 270 323 260 315 C 250 307 236 298 225 290 C 214 284 207 281 195 273 C 183 265 167 252 155 241 C 143 231 135 221 125 210 C 115 199 98 184 98 175 Z`,
-  islands: [ { cx: 562, cy: 237, rx: 9, ry: 5, label: "George Island", lx: 562, ly: 222 } ],
+  path: `M 98 175 C 97 166 109 159 120 158 C 131 156 152 167 165 164 C 178 162 189 150 198 140 C 206 130 209 120 215 105 C 221 90 229 57 235 52 C 241 48 245 68 250 77 C 255 86 260 106 265 105 C 270 104 275 80 280 70 C 285 60 290 45 295 42 C 300 39 305 44 310 52 C 315 61 318 81 325 91 C 332 101 343 103 350 112 C 357 121 355 139 365 147 C 375 155 398 164 410 161 C 422 158 429 135 440 126 C 451 117 466 110 475 108 C 484 107 488 113 495 119 C 502 125 511 140 520 147 C 529 154 538 162 550 161 C 562 160 578 147 590 140 C 602 133 610 124 620 119 C 630 114 638 104 650 112 C 662 120 678 154 690 168 C 702 182 711 189 725 196 C 739 203 756 204 775 210 C 794 216 819 224 840 231 C 861 238 880 244 900 252 C 920 260 947 272 960 280 C 973 288 986 293 980 298 C 974 302 942 307 925 308 C 908 309 892 298 880 301 C 868 304 862 316 850 329 C 838 342 824 364 810 378 C 796 392 777 413 765 413 C 753 413 752 388 740 378 C 728 368 707 358 690 350 C 673 342 659 332 640 329 C 621 326 595 330 575 329 C 555 328 537 328 520 326 C 503 323 489 313 475 312 C 461 310 448 320 435 318 C 422 317 409 305 400 302 C 391 300 385 301 381 305 C 377 310 380 326 377 330 C 374 335 366 336 363 333 C 360 330 361 314 356 311 C 351 308 341 313 335 316 C 329 319 328 325 320 329 C 312 333 298 342 288 340 C 278 337 270 323 260 315 C 250 307 236 298 225 290 C 214 284 207 281 195 273 C 183 265 167 252 155 241 C 143 231 135 221 125 210 C 115 199 98 184 98 175 Z`,
+  islands: [ { cx: 660, cy: 262, rx: 9, ry: 5, label: "George Island", lx: 660, ly: 247 } ],
   labels: [
-    { x: 86, y: 158, text: "Spillway" },
-    { x: 286, y: 358, text: "Marina" },
-    { x: 352, y: 336, text: "CLSA", dot: { x: 346, y: 308 } },
+    { x: 88, y: 150, text: "Dam / Spillway" },
+    { x: 258, y: 356, text: "Marina" },
+    { x: 369, y: 348, text: "CLSA", dot: { x: 365, y: 316 } },
     { x: 478, y: 94, text: "Campground" },
     { x: 700, y: 100, text: "Cowan Lake State Park" },
     { x: 800, y: 408, text: "Emerald Woods" }
   ],
-  race: { x: 445, y: 215 }   // open water west of George Island
+  // extra map details (raw SVG): dam bar, campground beach, marina docks
+  extras: [
+    '<line x1="94" y1="168" x2="124" y2="214" stroke="#9aa0a8" stroke-width="7" stroke-linecap="round"/>',
+    '<path d="M 452 126 Q 472 112 494 124 L 490 132 Q 472 120 458 133 Z" fill="#eedfb8"/>',
+    '<g stroke="#8b7d6b" stroke-width="2"><line x1="283" y1="334" x2="283" y2="318"/><line x1="290" y1="335" x2="290" y2="319"/><line x1="297" y1="335" x2="297" y2="319"/></g>'
+  ],
+  race: { x: 435, y: 220 }   // open water west of George Island
 };
 
 const CX = LAKE.race.x, CY = LAKE.race.y;
@@ -153,6 +159,7 @@ const L = 130;               // beat length, px
     s += `<text x="${lb.x}" y="${lb.y}" text-anchor="middle" font-family="Arial" font-size="12" fill="#556">${lb.text}</text>`;
     if (lb.dot) s += `<rect x="${lb.dot.x}" y="${lb.dot.y}" width="8" height="8" fill="#1a3a5c"/>`;
   }
+  for (const ex of (LAKE.extras || [])) s += ex;
   document.getElementById('lake-shape').innerHTML = s;
 })();
 
@@ -162,6 +169,8 @@ let liveDir = null, liveSpd = null, liveGust = null;
 let course = 'wl';
 let marks = {};
 let dragging = null;
+let dragPrev = null;
+let trackSegs = [];   // segments of the dashed track + start/finish lines, for whole-course dragging
 
 /* ---------------- helpers ---------------- */
 const rad = d => d * Math.PI / 180;
@@ -285,21 +294,26 @@ function render() {
   // committee boat + pin
   s += `<g transform="translate(${marks.RC.x} ${marks.RC.y}) rotate(${windDir})">
           <rect x="-7" y="-12" width="14" height="24" rx="6" fill="#fff" stroke="#1a3a5c" stroke-width="2"/>
-          <line x1="0" y1="-12" x2="0" y2="-20" stroke="#1a3a5c" stroke-width="2"/>
-          <polygon points="0,-20 10,-17 0,-14" fill="#e67e22"/>
+          <line x1="0" y1="2" x2="0" y2="-7" stroke="#1a3a5c" stroke-width="2"/>
+          <polygon points="0,-7 9,-4.5 0,-2" fill="#e67e22"/>
         </g>
         <text x="${marks.RC.x}" y="${marks.RC.y + 34}" text-anchor="middle" font-family="Arial" font-size="11" fill="#445">RC</text>`;
   s += `<circle cx="${marks.PIN.x}" cy="${marks.PIN.y}" r="5" fill="#1a3a5c"/>
         <text x="${marks.PIN.x}" y="${marks.PIN.y + 20}" text-anchor="middle" font-family="Arial" font-size="11" fill="#445">pin</text>`;
   document.getElementById('course').innerHTML = s;
 
+  // remember segments for whole-course dragging (track + start/finish lines)
+  trackSegs = [];
+  for (let i = 1; i < wps.length; i++) trackSegs.push([wps[i - 1], wps[i]]);
+  trackSegs.push([marks.RC, marks.PIN], [marks.RC, marks.F]);
+
   // wind arrow + upright label — anchored to the windward mark, follows it when dragged
-  const tail = pt(marks.W, u, 60);
-  const head = pt(marks.W, u, 26);
-  const tip  = pt(marks.W, u, 14);
+  const tail = pt(marks.W, u, 78);
+  const head = pt(marks.W, u, 44);
+  const tip  = pt(marks.W, u, 32);
   const perp = rotCW(u);
   const b1 = pt(head, perp, 9), b2 = pt(head, perp, -9);
-  const lab = pt(marks.W, u, 80);
+  const lab = pt(marks.W, u, 98);
   document.getElementById('wind-arrow').innerHTML =
     `<line x1="${tail.x}" y1="${tail.y}" x2="${head.x}" y2="${head.y}" stroke="#2e6da4" stroke-width="4"/>
      <polygon points="${b1.x},${b1.y} ${b2.x},${b2.y} ${tip.x},${tip.y}" fill="#2e6da4"/>
@@ -323,12 +337,28 @@ svg.addEventListener('pointerdown', e => {
     const d = Math.hypot(m.x - p.x, m.y - p.y);
     if (d < bestD) { bestD = d; best = id; }
   }
-  if (best) { dragging = best; svg.setPointerCapture(e.pointerId); e.preventDefault(); }
+  if (best) { dragging = best; svg.setPointerCapture(e.pointerId); e.preventDefault(); return; }
+  // no mark under the pointer — grab the dashed track to slide the whole course
+  const segDist = (p, a, b) => {
+    const vx = b.x - a.x, vy = b.y - a.y;
+    const t = Math.max(0, Math.min(1, ((p.x - a.x) * vx + (p.y - a.y) * vy) / (vx * vx + vy * vy || 1)));
+    return Math.hypot(p.x - (a.x + t * vx), p.y - (a.y + t * vy));
+  };
+  if (trackSegs.some(([a, b]) => segDist(p, a, b) < 14)) {
+    dragging = '__course'; dragPrev = p;
+    svg.setPointerCapture(e.pointerId); e.preventDefault();
+  }
 });
 svg.addEventListener('pointermove', e => {
   if (!dragging) return;
   const p = svgPoint(e);
-  marks[dragging] = { x: p.x, y: p.y };
+  if (dragging === '__course') {
+    const dx = p.x - dragPrev.x, dy = p.y - dragPrev.y;
+    for (const id of Object.keys(marks)) marks[id] = { x: marks[id].x + dx, y: marks[id].y + dy };
+    dragPrev = p;
+  } else {
+    marks[dragging] = { x: p.x, y: p.y };
+  }
   render();
 });
 svg.addEventListener('pointerup', () => { dragging = null; });
