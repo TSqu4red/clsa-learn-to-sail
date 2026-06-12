@@ -82,6 +82,7 @@
       <span class="pill" id="wind-readout">SW 225°</span>
     </label>
     <button class="live-btn" id="use-live" style="display:none">Use live wind</button>
+    <button class="live-btn" id="clear-wake">Clear wake</button>
   </div>
 
   <svg id="lake" viewBox="0 0 1000 470" width="100%" aria-label="Map of Cowan Lake with race course overlay">
@@ -104,7 +105,7 @@
     <span><svg width="16" height="12"><rect x="1" y="3" width="14" height="7" rx="3" fill="#fff" stroke="#1a3a5c" stroke-width="1.5"/></svg> RC boat</span>
     <span><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="#1a3a5c"/></svg> start pin</span>
     <span style="color:#2e6da4">⌁ dashed track shows the roundings</span>
-    <span><b>Drag any mark</b> to fine-tune, or <b>grab the dashed line</b> to slide the whole course — changing wind or course type resets the layout.</span>
+    <span><b>Drag the boat to sail!</b> Its wake trails behind, the sail trims itself, and tacks &amp; jibes get labeled. A <span style="color:#c0392b">red wake</span> means you're in the no-go zone. Drag marks to fine-tune, grab the dashed line to slide the whole course.</span>
   </div>
   <div class="map-note">Outline traced from the lake map (vertically exaggerated a touch for clarity) — not for navigation. Windward and offset are shown rounded to port; the gate can be taken either way. The RC sets the real course.</div>
 </div>
@@ -171,6 +172,10 @@ let marks = {};
 let dragging = null;
 let dragPrev = null;
 let trackSegs = [];   // segments of the dashed track + start/finish lines, for whole-course dragging
+let boat = null;      // {x, y, heading} — the user-sailed boat
+let trail = [];       // wake points {x, y, luff}
+let ann = [];         // tack/jibe annotations {x, y, t}
+let prevRel = null;   // last wind-relative angle, for tack/jibe detection
 
 /* ---------------- helpers ---------------- */
 const rad = d => d * Math.PI / 180;
@@ -202,6 +207,7 @@ function layout() {
   marks.RC  = pt(S, pcw, 38);
   marks.PIN = pt(S, pl, 38);
   marks.F   = pt(marks.RC, pcw, 26);
+  if (!boat) boat = { x: S.x - u.x * 26 + pcw.x * 12, y: S.y - u.y * 26 + pcw.y * 12, heading: windDir + 45 };
   if (course === 'wl') {
     marks.O  = pt(marks.W, pl, 28);
     marks.G1 = pt(pt(S, u, 30), pl, 22);
@@ -235,13 +241,39 @@ function trackPath(wps) {
   for (let i = 1; i < wps.length; i++) d += ` L ${wps[i].x.toFixed(1)} ${wps[i].y.toFixed(1)}`;
   return `<path d="${d}" fill="none" stroke="#2e6da4" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round" opacity="0.9"/>`;
 }
-function boatSVG(p, headingDeg) {
-  return `<g transform="translate(${p.x} ${p.y}) rotate(${headingDeg})">
-    <path d="M 0 -14 C 5 -9 6 4 4.5 13 L -4.5 13 C -6 4 -5 -9 0 -14 Z" fill="#fdfaf2" stroke="#1a3a5c" stroke-width="1.5"/>
-    <path d="M 0 -5 C 4.5 -1 6.5 5 6.5 10 C 3 7 1 1 0 -5 Z" fill="#fff" stroke="#8aa4bd" stroke-width="1"/>
-    <line x1="0" y1="-5" x2="6.5" y2="10" stroke="#5d4a36" stroke-width="1.5"/>
-    <circle cx="0" cy="-5" r="1.6" fill="#1a3a5c"/>
-  </g>`;
+function windRel(heading) {            // signed angle heading-vs-wind: 0 = head to wind
+  return ((heading - windDir + 540) % 360) - 180;
+}
+function drawBoat() {
+  const rel = windRel(boat.heading);
+  const luff = Math.abs(rel) < 38;
+  const side = rel >= 0 ? 1 : -1;      // boom to leeward
+  const boomDeg = luff ? 0 : Math.min(80, 8 + (Math.abs(rel) - 38) * 0.55);
+  const sail = luff
+    ? `<path d="M 0 0 Q 3 4 0 8 Q -3 12 0 16" fill="none" stroke="#aab6c2" stroke-width="2"/>`
+    : `<g transform="rotate(${side * boomDeg})">
+         <path d="M 0 0 C ${side * 5} 5 ${side * 7} 12 ${side * 6} 18 C ${side * 2} 13 0 6 0 0 Z" fill="#fff" stroke="#8aa4bd" stroke-width="1"/>
+         <line x1="0" y1="0" x2="0" y2="18" stroke="#5d4a36" stroke-width="1.8"/>
+       </g>`;
+  return `<g transform="translate(${boat.x} ${boat.y}) rotate(${boat.heading})">
+      <path d="M 0 -17 C 6.5 -11 8 5 6 16 L -6 16 C -8 5 -6.5 -11 0 -17 Z" fill="#fdfaf2" stroke="#1a3a5c" stroke-width="1.8"/>
+      <g transform="translate(0,-6)">${sail}</g>
+      <circle cx="0" cy="-6" r="1.8" fill="#1a3a5c"/>
+    </g>` +
+    (luff ? `<text x="${boat.x}" y="${boat.y - 26}" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#c0392b">luffing!</text>` : "");
+}
+function wakeSVG() {
+  if (trail.length < 2) return "";
+  let s = "", d = "", luffNow = trail[0].luff;
+  const flush = () => { if (d) s += `<path d="${d}" fill="none" stroke="${luffNow ? '#c0392b' : '#7fa8c9'}" stroke-width="2" stroke-dasharray="4 5" opacity="0.85"/>`; };
+  d = `M ${trail[0].x.toFixed(1)} ${trail[0].y.toFixed(1)}`;
+  for (let i = 1; i < trail.length; i++) {
+    if (trail[i].luff !== luffNow) { d += ` L ${trail[i].x.toFixed(1)} ${trail[i].y.toFixed(1)}`; flush(); luffNow = trail[i].luff; d = `M ${trail[i].x.toFixed(1)} ${trail[i].y.toFixed(1)}`; }
+    else d += ` L ${trail[i].x.toFixed(1)} ${trail[i].y.toFixed(1)}`;
+  }
+  flush();
+  for (const a of ann) s += `<text x="${a.x}" y="${a.y - 8}" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="${a.t === 'tack' ? '#27ae60' : '#e67e22'}">${a.t}!</text>`;
+  return s;
 }
 function render() {
   const u = vec(windDir);
@@ -275,8 +307,9 @@ function render() {
     s += arrowAt(S, marks.W) + arrowAt(wExit, marks.J) + arrowAt(jExit, marks.LEE);
   }
 
-  // little boat beating up the first leg
-  s += boatSVG(pt(mid(S, marks.W), pcw, 22), windDir + 42);
+  // wake + the user-sailed boat
+  s += wakeSVG();
+  s += drawBoat();
 
   // marks
   s += tetra(marks.W, 9, "#e67e22", "#b35c0e", "windward");
@@ -332,6 +365,11 @@ function svgPoint(e) {
 }
 svg.addEventListener('pointerdown', e => {
   const p = svgPoint(e);
+  // the boat gets first grab
+  if (boat && Math.hypot(boat.x - p.x, boat.y - p.y) < 24) {
+    dragging = '__boat'; prevRel = windRel(boat.heading);
+    svg.setPointerCapture(e.pointerId); e.preventDefault(); return;
+  }
   let best = null, bestD = 20;
   for (const [id, m] of Object.entries(marks)) {
     const d = Math.hypot(m.x - p.x, m.y - p.y);
@@ -352,7 +390,31 @@ svg.addEventListener('pointerdown', e => {
 svg.addEventListener('pointermove', e => {
   if (!dragging) return;
   const p = svgPoint(e);
-  if (dragging === '__course') {
+  if (dragging === '__boat') {
+    const dx = p.x - boat.x, dy = p.y - boat.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist > 1.5) {
+      // steer: smooth the heading toward the direction of motion
+      const target = (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360;
+      let delta = ((target - boat.heading + 540) % 360) - 180;
+      boat.heading = (boat.heading + delta * 0.5 + 360) % 360;
+      const rel = windRel(boat.heading);
+      // tack or jibe? (sign of wind-relative angle flips)
+      if (prevRel !== null && Math.sign(rel) !== Math.sign(prevRel) && rel !== 0) {
+        const t = Math.abs(prevRel) < 90 ? 'tack' : 'jibe';
+        ann.push({ x: boat.x, y: boat.y, t });
+        if (ann.length > 40) ann.shift();
+      }
+      prevRel = rel;
+      // lay wake
+      const last = trail[trail.length - 1];
+      if (!last || Math.hypot(boat.x - last.x, boat.y - last.y) > 5) {
+        trail.push({ x: boat.x, y: boat.y, luff: Math.abs(rel) < 38 });
+        if (trail.length > 700) trail.shift();
+      }
+      boat.x = p.x; boat.y = p.y;
+    }
+  } else if (dragging === '__course') {
     const dx = p.x - dragPrev.x, dy = p.y - dragPrev.y;
     for (const id of Object.keys(marks)) marks[id] = { x: marks[id].x + dx, y: marks[id].y + dy };
     dragPrev = p;
@@ -374,6 +436,9 @@ document.querySelectorAll('#course-seg button').forEach(b => {
     course = b.dataset.course;
     relayout();
   });
+});
+document.getElementById('clear-wake').addEventListener('click', () => {
+  trail = []; ann = []; prevRel = null; render();
 });
 document.getElementById('use-live').addEventListener('click', () => {
   if (liveDir !== null) { windDir = Math.round(liveDir); slider.value = windDir; relayout(); }
