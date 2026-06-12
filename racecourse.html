@@ -177,6 +177,7 @@ let trail = [];       // wake points {x, y, luff}
 let ann = [];         // tack/jibe annotations {x, y, t}
 let prevRel = null;   // last wind-relative angle, for tack/jibe detection
 let boatTouched = false;  // boat holds station at the start until first grabbed
+let lineCenter = null;    // start/finish line anchor — stays put when the wind rotates
 
 /* ---------------- helpers ---------------- */
 const rad = d => d * Math.PI / 180;
@@ -202,9 +203,10 @@ function layout() {
   const u = vec(windDir);
   const pcw = rotCW(u), pl = rotCCW(u);
   const C = { x: CX, y: CY };
-  const S = pt(C, u, -L * 0.5);
+  if (!lineCenter) lineCenter = pt(C, u, -L * 0.5);   // first load only
+  const S = lineCenter;                               // the line is anchored; the course pivots around it
   marks = {};
-  marks.W   = pt(C, u, L * 0.5);
+  marks.W   = pt(S, u, L);
   marks.RC  = pt(S, pcw, 38);
   marks.PIN = pt(S, pl, 38);
   marks.F   = pt(marks.RC, pcw, 26);
@@ -214,7 +216,7 @@ function layout() {
     marks.G1 = pt(pt(S, u, 30), pl, 22);
     marks.G2 = pt(pt(S, u, 30), pcw, 22);
   } else {
-    marks.J   = pt(C, pl, L * 0.55);
+    marks.J   = pt(pt(S, u, L * 0.5), pl, L * 0.55);
     marks.LEE = pt(S, u, 30);
   }
 }
@@ -436,6 +438,9 @@ svg.addEventListener('pointermove', e => {
   } else {
     marks[dragging] = { x: p.x, y: p.y };
   }
+  // moving the line (or the whole course) re-anchors where it lives
+  if (dragging === '__course' || dragging === 'RC' || dragging === 'PIN' || dragging === 'F')
+    lineCenter = mid(marks.RC, marks.PIN);
   render();
 });
 svg.addEventListener('pointerup', () => { dragging = null; });
