@@ -458,7 +458,9 @@ document.querySelectorAll('#course-seg button').forEach(b => {
   });
 });
 document.getElementById('clear-wake').addEventListener('click', () => {
-  trail = []; ann = []; prevRel = null; render();
+  trail = []; ann = []; prevRel = null;
+  boatTouched = false;   // boat returns to its pre-start station between pin and RC
+  relayout();
 });
 document.getElementById('use-live').addEventListener('click', () => {
   if (liveDir !== null) { windDir = Math.round(liveDir); slider.value = windDir; relayout(); }
