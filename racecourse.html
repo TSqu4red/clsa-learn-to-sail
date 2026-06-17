@@ -47,7 +47,7 @@
   .pill { background: var(--sky); border-radius: 999px; padding: 4px 12px; font-size: 0.9rem; color: var(--navy); }
   .live-btn { background: var(--navy); color: white; border: none; border-radius: 8px; font-family: inherit; font-size: 0.95rem; padding: 8px 14px; cursor: pointer; }
   .live-btn:hover { background: var(--blue); }
-  #lake { touch-action: none; }
+  #lake { touch-action: none; width: 100%; height: auto; min-height: 300px; }
   .map-note { font-size: 0.85rem; color: #889; margin-top: 6px; font-style: italic; }
   .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.88rem; color: #445; margin-top: 8px; align-items: center; }
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
@@ -262,7 +262,8 @@ function drawBoat() {
          <path d="M 0 0 C ${side * 5} 5 ${side * 7} 12 ${side * 6} 18 C ${side * 2} 13 0 6 0 0 Z" fill="#fff" stroke="#8aa4bd" stroke-width="1"/>
          <line x1="0" y1="0" x2="0" y2="18" stroke="#5d4a36" stroke-width="1.8"/>
        </g>`;
-  return `<g transform="translate(${boat.x} ${boat.y}) rotate(${boat.heading})">
+  return `<circle cx="${boat.x}" cy="${boat.y}" r="26" fill="#2e6da4" opacity="0.12"/>
+    <g transform="translate(${boat.x} ${boat.y}) rotate(${boat.heading}) scale(1.5)">
       <path d="M 0 -17 C 6.5 -11 8 5 6 16 L -6 16 C -8 5 -6.5 -11 0 -17 Z" fill="#fdfaf2" stroke="#1a3a5c" stroke-width="1.8"/>
       <g transform="translate(0,-6)">${sail}</g>
       <circle cx="0" cy="-6" r="1.8" fill="#1a3a5c"/>
@@ -383,7 +384,7 @@ function svgPoint(e) {
 svg.addEventListener('pointerdown', e => {
   const p = svgPoint(e);
   // the boat gets first grab
-  if (boat && Math.hypot(boat.x - p.x, boat.y - p.y) < 24) {
+  if (boat && Math.hypot(boat.x - p.x, boat.y - p.y) < 40) {
     dragging = '__boat'; boatTouched = true; prevRel = windRel(boat.heading);
     svg.setPointerCapture(e.pointerId); e.preventDefault(); return;
   }
