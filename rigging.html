@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLSA Learn to Sail — Fleet Rigging</title>
+<style>
+  :root {
+    --navy: #1a3a5c; --navy-dark: #122a44; --blue: #2e6da4;
+    --sky: #e8f1f8; --sand: #f7f4ee; --red: #c0392b; --orange: #e67e22;
+    --green: #27ae60; --text: #2c3e50;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: var(--sand); color: var(--text); line-height: 1.5; }
+  header { background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 100%); color: white; padding: 22px 20px 16px; text-align: center; }
+  header img.burgee { height: 56px; display: block; margin: 0 auto 8px; }
+  header h1 { font-size: 1.7rem; letter-spacing: 1px; }
+  header p { opacity: 0.85; font-style: italic; margin-top: 2px; }
+  header a.back { color: #cfdce8; font-size: 0.9rem; }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 14px 60px; }
+  h2 { color: var(--navy); margin-bottom: 6px; }
+  .card { background: white; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 18px; }
+  /* boat picker */
+  .picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .picker button {
+    background: white; border: 1px solid #c5d8e8; border-radius: 8px;
+    font-family: inherit; font-size: 1rem; padding: 9px 16px; cursor: pointer;
+  }
+  .picker button:hover { background: var(--sky); }
+  .picker button.on { background: var(--navy); color: white; border-color: var(--navy); }
+  .picker button .wip { font-size: 0.75rem; opacity: 0.6; }
+  .boat-title { font-size: 1.5rem; color: var(--navy); margin-bottom: 2px; }
+  .boat-sub { color: #667; font-style: italic; margin-bottom: 8px; }
+  /* diagram */
+  .rig-layout { display: flex; flex-wrap: wrap; gap: 20px; }
+  .rig-svg { flex: 1 1 360px; min-width: 300px; }
+  .rig-side { flex: 1 1 300px; min-width: 260px; }
+  .hotspot { cursor: pointer; }
+  .hotspot circle { fill: #f0c75e; stroke: var(--navy); stroke-width: 1.5; }
+  .hotspot text { font-family: Arial, sans-serif; font-size: 11px; font-weight: bold; fill: var(--navy); text-anchor: middle; }
+  .hotspot.sel circle { fill: var(--red); }
+  .hotspot.sel text { fill: white; }
+  .part-btn {
+    display: block; width: 100%; text-align: left;
+    background: var(--sky); border: 1px solid #c5d8e8; border-radius: 6px;
+    font-family: inherit; font-size: 0.95rem; padding: 7px 12px; margin-bottom: 6px; cursor: pointer;
+  }
+  .part-btn:hover { background: #d6e6f2; }
+  .part-btn.sel { background: var(--navy); color: white; border-color: var(--navy); }
+  .part-desc { background: var(--sky); border-left: 4px solid var(--blue); padding: 12px 14px; border-radius: 0 6px 6px 0; margin-top: 10px; min-height: 70px; }
+  .part-desc .rule { display: block; margin-top: 6px; font-size: 0.9rem; color: #667; }
+  /* facts + checklist */
+  .facts { list-style: none; }
+  .facts li { padding: 7px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; gap: 14px; }
+  .facts li b { color: var(--navy); }
+  .check { list-style: none; }
+  .check li { padding: 6px 0; }
+  .check input { margin-right: 8px; transform: scale(1.2); }
+  .src { font-size: 0.82rem; color: #889; margin-top: 12px; }
+  .src a { color: var(--blue); }
+  .stub { background: #fdf6e3; border-left: 4px solid #f0c75e; padding: 14px 16px; border-radius: 0 6px 6px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="https://clsa.clubexpress.com" title="Cowan Lake Sailing Association" target="_blank"><img class="burgee" src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt="CLSA burgee"></a>
+  <h1>Fleet Rigging</h1>
+  <p>Rigging guides for the boats of Cowan Lake Sailing Association</p>
+  <a class="back" href="index.html">&larr; back to Learn to Sail</a>
+</header>
+
+<main>
+  <div class="picker" id="picker"></div>
+
+  <div class="card">
+    <div class="boat-title" id="boat-title"></div>
+    <div class="boat-sub" id="boat-sub"></div>
+    <div id="boat-body"></div>
+  </div>
+</main>
+
+<script>
+/* =====================================================================
+   FLEET CONFIG — one block per boat. To fill in a stubbed fleet, replace
+   its `ready:false` block with diagram parts, facts, and checklist like
+   the Highlander below. Geometry of parts uses the shared dinghy diagram.
+   ===================================================================== */
+
+// shared side-view dinghy diagram; parts reference these coordinates
+function rigDiagram(partsHTML) {
+  return `<svg id="rig" viewBox="0 0 460 380" width="100%" aria-label="Side view of the boat rig">
+    <rect x="0" y="298" width="460" height="82" fill="#cfe3f1"/>
+    <path d="M0 298 Q 30 293 60 298 T 120 298 T 180 298 T 240 298 T 300 298 T 360 298 T 420 298 T 480 298" stroke="#9dbed6" stroke-width="2" fill="none"/>
+    <!-- mast -->
+    <line x1="225" y1="40" x2="225" y2="288" stroke="#5d4a36" stroke-width="5"/>
+    <!-- spreaders -->
+    <line x1="225" y1="150" x2="200" y2="158" stroke="#7a8b99" stroke-width="3"/>
+    <line x1="225" y1="150" x2="250" y2="158" stroke="#7a8b99" stroke-width="3"/>
+    <!-- shrouds -->
+    <line x1="225" y1="150" x2="150" y2="285" stroke="#999" stroke-width="1.5"/>
+    <line x1="225" y1="150" x2="300" y2="285" stroke="#999" stroke-width="1.5"/>
+    <!-- forestay -->
+    <line x1="225" y1="46" x2="92" y2="280" stroke="#999" stroke-width="1.5"/>
+    <!-- boom -->
+    <line x1="225" y1="214" x2="350" y2="222" stroke="#5d4a36" stroke-width="5"/>
+    <!-- mainsail -->
+    <path d="M 228 48 L 228 210 L 345 219 Z" fill="#fdfaf2" stroke="#8aa4bd" stroke-width="1.5"/>
+    <!-- jib -->
+    <path d="M 222 60 L 222 206 L 100 268 Z" fill="#f4eeda" stroke="#8aa4bd" stroke-width="1.5"/>
+    <!-- hull -->
+    <path d="M 78 268 C 90 266 360 266 360 268 L 348 300 C 250 312 150 312 100 298 Z" fill="#e8e0d0" stroke="#1a3a5c" stroke-width="2.5"/>
+    <line x1="95" y1="280" x2="352" y2="280" stroke="#c0392b" stroke-width="3"/>
+    <!-- centerboard -->
+    <path d="M 218 305 L 240 305 L 234 350 L 222 350 Z" fill="#7a8b99" stroke="#1a3a5c" stroke-width="1.5"/>
+    <!-- rudder + tiller -->
+    <path d="M 356 278 L 372 278 L 366 338 L 356 338 Z" fill="#7a8b99" stroke="#1a3a5c" stroke-width="1.5"/>
+    <line x1="360" y1="274" x2="300" y2="262" stroke="#5d4a36" stroke-width="4" stroke-linecap="round"/>
+    <!-- traveler (transom) -->
+    <line x1="352" y1="266" x2="372" y2="266" stroke="#1a3a5c" stroke-width="3"/>
+    <g id="hotspots">${partsHTML}</g>
+  </svg>`;
+}
+
+const FLEETS = {
+  highlander: {
+    name: "Highlander",
+    ready: true,
+    sub: "20' one-design sport boat — main, jib & spinnaker. Designed by Sandy Douglass.",
+    // x,y are points on the shared diagram
+    parts: [
+      { n: 1, x: 225, y: 70,  name: "Mast", desc: "Aluminum extrusion from the licensed builder. Standing rigging is fixed — it cannot be adjusted while racing.", rule: "Class rule: new extrusions must be bought from the official builder; no adjustable turnbuckles on the shrouds." },
+      { n: 2, x: 225, y: 150, name: "Spreaders", desc: "Hold the shrouds out from the mast to control sideways bend. May be shortened, but no closer than 9\" from the mast.", rule: "Class rule: 3/8\" O.D. hollow stainless tube; min 9\" from mast side." },
+      { n: 3, x: 262, y: 212, name: "Shrouds", desc: "The side wires holding the mast up. On the Highlander these are fixed — set them right on the dock, because you can't touch them once racing." },
+      { n: 4, x: 110, y: 200, name: "Forestay & Jib", desc: "The forestay holds the mast forward; the jib hanks onto it. Minimum 5 hanks along 80% of the luff.", rule: "Class rule: jib wire min 3/32\", securely attached to the head." },
+      { n: 5, x: 290, y: 218, name: "Boom & Gooseneck", desc: "The boom attaches to the mast at the gooseneck and carries the foot of the mainsail. Builder boom only.", rule: "Class rule: boom must be purchased from the official builder and meet the official drawing." },
+      { n: 6, x: 362, y: 266, name: "Traveler", desc: "A full-width mainsheet traveler is allowed, but it lives right at the transom — within 2\" of the after face — and can't extend past the hull sides.", rule: "Class rule: traveler within 2\" of the transom; no device may span the cockpit opening." },
+      { n: 7, x: 228, y: 330, name: "Centerboard", desc: "Stops leeway and lets you point. Material and hoist method are open, but no cocking/jibing boards.", rule: "Class rule: 60–88 lb; trailing edge min 1/8\" rounded or flat; no notches in the trunk." },
+      { n: 8, x: 366, y: 312, name: "Rudder & Tiller", desc: "Steers the boat. Tiller design is open and hiking sticks are allowed. A kick-up rudder must be pinned fully down for sanctioned racing.", rule: "Class rule: kick-up rudders pinned down at Nationals/sanctioned regattas." },
+      { n: 9, x: 320, y: 150, name: "Spinnaker gear", desc: "Flown downwind from a pole. One pole in use at a time; it can double as a whisker pole on the jib when the chute is down.", rule: "Class rule: pole max 84\" including fittings; no deck holes for the spinnaker." }
+    ],
+    facts: [
+      ["Length overall", "20 ft"],
+      ["Minimum all-up weight", "830 lb"],
+      ["Centerboard weight", "60–88 lb"],
+      ["Spinnaker pole (max)", "84 in incl. fittings"],
+      ["Sail cloth (main & jib)", "≥ 3.5 oz/running yd"],
+      ["Jib hanks", "≥ 5, along 80% of luff"],
+      ["Crew", "typically 2–3"],
+      ["Legal compasses", "Tack-Tick T060, Velocitek Shift, Nautalytics Alloy"]
+    ],
+    checklist: [
+      "Halyards secured in the bottom 3 ft of the mast (no locking device aloft)",
+      "Shrouds & forestay pinned and taped — standing rigging fixed for racing",
+      "Centerboard free in the trunk, hoist line led and cleated",
+      "Kick-up rudder pinned in the full-down position",
+      "Jib hanked on (min 5 hanks), sheets led and stopper-knotted",
+      "Mainsheet & traveler running free; boom vang rigged",
+      "Spinnaker pole aboard; halyard, sheets & guys run and not twisted",
+      "Bailers closed; bungs/flotation checked",
+      "Compass (if used) is a class-legal model"
+    ],
+    srcLabel: "Source: HCIA Official Class Specifications (2019)",
+    srcUrl: "https://sailhighlander.org/official-highlander-class-specifications/"
+  },
+  flyingscot: { name: "Flying Scot", ready: false, classUrl: "https://fssa.com/" },
+  thistle:    { name: "Thistle", ready: false, classUrl: "https://www.thistleclass.com/" },
+  mc:         { name: "MC Scow", ready: false, classUrl: "https://www.mcscow.org/" },
+  snipe:      { name: "Snipe", ready: false, classUrl: "https://www.snipe.org/" }
+};
+
+let current = 'highlander';
+
+function renderPicker() {
+  const p = document.getElementById('picker');
+  p.innerHTML = Object.entries(FLEETS).map(([id, f]) =>
+    `<button data-id="${id}" class="${id === current ? 'on' : ''}">${f.name}${f.ready ? '' : ' <span class="wip">(soon)</span>'}</button>`
+  ).join('');
+  p.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { current = b.dataset.id; render(); }));
+}
+
+function render() {
+  renderPicker();
+  const f = FLEETS[current];
+  document.getElementById('boat-title').textContent = f.name;
+  document.getElementById('boat-sub').textContent = f.sub || "";
+  const body = document.getElementById('boat-body');
+
+  if (!f.ready) {
+    body.innerHTML = `<div class="stub">
+      <b>${f.name} rigging guide — coming soon.</b><br>
+      We're building this the same way as the Highlander page, but the rigging details
+      should come from ${f.name} sailors who know the boat. If you sail the ${f.name} at Cowan,
+      send your tuning notes and rig tips to the club and we'll add them here.
+      ${f.classUrl ? `In the meantime, the national class association is a great resource: <a href="${f.classUrl}" target="_blank">${f.name} class site</a>.` : ''}
+    </div>`;
+    return;
+  }
+
+  const spots = f.parts.map(pt =>
+    `<g class="hotspot" data-n="${pt.n}"><circle cx="${pt.x}" cy="${pt.y}" r="11"/><text x="${pt.x}" y="${pt.y + 4}">${pt.n}</text></g>`
+  ).join('');
+
+  body.innerHTML = `
+    <div class="rig-layout">
+      <div class="rig-svg">${rigDiagram(spots)}</div>
+      <div class="rig-side">
+        <div id="part-buttons"></div>
+        <div class="part-desc" id="part-desc">👈 Tap a numbered dot (or a name) to learn the part and its class rule.</div>
+      </div>
+    </div>
+    <div class="rig-layout" style="margin-top:18px">
+      <div class="rig-side">
+        <h2>Class facts</h2>
+        <ul class="facts">${f.facts.map(([k, v]) => `<li><b>${k}</b><span>${v}</span></li>`).join('')}</ul>
+      </div>
+      <div class="rig-side">
+        <h2>Dock rigging checklist</h2>
+        <ul class="check">${f.checklist.map((c, i) => `<li><label><input type="checkbox" id="chk${i}">${c}</label></li>`).join('')}</ul>
+      </div>
+    </div>
+    <p class="src">${f.srcLabel} — <a href="${f.srcUrl}" target="_blank">view the official spec</a>. Tuning numbers (rig tension, rake, jib leads) aren't in the class spec; collect those from fast ${f.name} sailors before relying on them.</p>`;
+
+  const btnBox = document.getElementById('part-buttons');
+  btnBox.innerHTML = f.parts.map(pt => `<button class="part-btn" data-n="${pt.n}">${pt.n}. ${pt.name}</button>`).join('');
+
+  function select(n) {
+    const pt = f.parts.find(x => x.n === n);
+    document.querySelectorAll('.hotspot').forEach(h => h.classList.toggle('sel', +h.dataset.n === n));
+    document.querySelectorAll('.part-btn').forEach(b => b.classList.toggle('sel', +b.dataset.n === n));
+    document.getElementById('part-desc').innerHTML =
+      `<b>${pt.name}</b> — ${pt.desc}` + (pt.rule ? `<span class="rule">⚖️ ${pt.rule}</span>` : '');
+  }
+  document.querySelectorAll('.hotspot').forEach(h => h.addEventListener('click', () => select(+h.dataset.n)));
+  btnBox.querySelectorAll('.part-btn').forEach(b => b.addEventListener('click', () => select(+b.dataset.n)));
+}
+
+render();
+</script>
+</body>
+</html>
