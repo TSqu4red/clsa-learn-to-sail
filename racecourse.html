@@ -51,25 +51,44 @@
   .map-note { font-size: 0.85rem; color: #889; margin-top: 6px; font-style: italic; }
   .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.88rem; color: #445; margin-top: 8px; align-items: center; }
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  /* race scoring */
+  .score-wrap { overflow-x: auto; }
+  table.score { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+  table.score th, table.score td { border: 1px solid #d7e3ee; padding: 6px 8px; text-align: center; }
+  table.score th { background: var(--sky); color: var(--navy); font-weight: bold; }
+  table.score td.boatname { text-align: left; font-weight: bold; min-width: 120px; }
+  table.score input { width: 58px; border: 1px solid #c5d8e8; border-radius: 6px; padding: 5px 4px; font-family: inherit; font-size: 0.92rem; text-align: center; }
+  table.score input.bad { border-color: var(--red); background: #fdeeec; }
+  table.score input.code { background: #fdf6e3; }
+  table.stand td.pts { font-weight: bold; color: var(--navy); }
+  table.stand td.dropped { color: #99a; }
+  .drop-mark { text-decoration: line-through; color: #99a; }
+  .score-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; align-items: center; }
+  .score-btns select { font-family: inherit; font-size: 0.92rem; padding: 6px 8px; border: 1px solid #c5d8e8; border-radius: 8px; background: white; }
+  .ghost-btn { background: white; color: var(--navy); border: 1px solid #c5d8e8; border-radius: 8px; font-family: inherit; font-size: 0.92rem; padding: 7px 12px; cursor: pointer; }
+  .ghost-btn:hover { background: var(--sky); }
+  .danger-btn { background: white; color: var(--red); border: 1px solid #e5b8b2; border-radius: 8px; font-family: inherit; font-size: 0.92rem; padding: 7px 12px; cursor: pointer; }
+  .codes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .codes span { background: var(--sky); border-radius: 6px; padding: 3px 9px; font-size: 0.85rem; color: #445; }
+  .codes b { color: var(--navy); }
+  .tie-note { font-size: 0.85rem; color: #889; font-style: italic; margin-top: 6px; }
+  .row-x { background: none; border: none; color: #b8c4cf; cursor: pointer; font-size: 1rem; padding: 0 4px; }
+  .row-x:hover { color: var(--red); }
 </style>
 </head>
 <body>
-
 <header>
   <a href="https://clsa.clubexpress.com" title="Cowan Lake Sailing Association" target="_blank"><img class="burgee" height="56" src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt="CLSA burgee"></a>
   <h1>Race Day at Cowan Lake</h1>
   <p>Live wind brief &amp; course visualizer — Cowan Lake Sailing Association</p>
   <a href="index.html">&larr; back to Learn to Sail</a>
 </header>
-
 <main>
-
 <div class="card">
   <h2>Wind Brief</h2>
   <div id="brief-content"><p style="color:#889">Fetching the Cowan Lake forecast…</p></div>
   <div class="strategy" id="strategy" style="display:none"></div>
 </div>
-
 <div class="card">
   <h2>Course Visualizer</h2>
   <div class="controls">
@@ -84,7 +103,6 @@
     <button class="live-btn" id="use-live" style="display:none">Use live wind</button>
     <button class="live-btn" id="clear-wake">Clear wake</button>
   </div>
-
   <svg id="lake" viewBox="0 0 1000 470" width="100%" aria-label="Map of Cowan Lake with race course overlay">
     <rect width="1000" height="470" fill="#f2f6f9" rx="12"/>
     <g font-family="Arial" font-size="13" fill="#8aa">
@@ -97,7 +115,6 @@
     <g id="wind-arrow"></g>
     <g id="course"></g>
   </svg>
-
   <div class="legend">
     <span><svg width="14" height="13"><polygon points="7,1 13,12 1,12" fill="#e67e22" stroke="#b35c0e"/></svg> course mark</span>
     <span><svg width="11" height="10"><polygon points="5.5,1 10,9 1,9" fill="#f1c40f" stroke="#b7950b"/></svg> offset</span>
@@ -109,15 +126,46 @@
   </div>
   <div class="map-note">Outline traced from the lake map (vertically exaggerated a touch for clarity) — not for navigation. Windward and offset are shown rounded to port; the gate can be taken either way. The RC sets the real course.</div>
 </div>
-
 <div class="card">
   <h2>Reading the Course</h2>
   <p><b>Start:</b> cross the line between the committee boat and the pin, sailing upwind. <b>Windward mark:</b> leave it to port, then the short hop to the small yellow <b>offset mark</b> keeps boats clear of traffic still beating up. <b>Leeward gate:</b> two orange tetrahedrons — pick either one, round it the natural way, and head back upwind. Choosing the gate side that takes you toward the favored side of the next beat is free distance. <b>Finish:</b> between the committee boat and the green mark off its starboard side.</p>
   <p><b>Triangle (Olympic):</b> beat to the windward mark, bear away onto the reach to the <b>jibe mark</b>, jibe, reach back to the leeward mark, and beat again. Reaches reward clear air — defend high early, then drive low for speed.</p>
 </div>
-
+<div class="card">
+  <h2>Race Scoring</h2>
+  <p>CLSA series are scored with the <b>Low Point System</b> (Racing Rules of Sailing, Appendix A): your finishing place is your score — 1st = 1 point, 2nd = 2, and so on — and the <b>lowest total wins the series</b>. A boat that doesn't get a clean finish is scored as if she finished one place behind every boat entered in the series. With enough races sailed, each boat <b>throws out</b> her worst score (or two), so one bad day doesn't sink a season.</p>
+  <div class="codes">
+    <span><b>DNC</b> didn't come to the start area</span>
+    <span><b>DNS</b> came out, didn't start</span>
+    <span><b>OCS</b> over the line early, didn't return</span>
+    <span><b>DNF</b> started, didn't finish</span>
+    <span><b>RET</b> retired</span>
+    <span><b>DSQ</b> disqualified</span>
+    <span><b>DNE</b> disqualified, not excludable — can't be thrown out</span>
+  </div>
+  <p style="margin-top:10px"><b>Ties:</b> if two boats end level on points, line up each boat's scores from best to worst and compare — first boat with a better score wins the tie. Still level? The boat that beat the other in the last race takes it.</p>
+  <h2 style="margin-top:18px">Series Scorer</h2>
+  <p>Enter each boat's finishing place per race, or a code (DNF, DNS, DSQ…). Throwouts and ties are handled automatically. Everything saves in your browser.</p>
+  <div class="score-btns">
+    <label>Boats: <input type="number" id="n-boats" min="1" max="200" style="width:64px;border:1px solid #c5d8e8;border-radius:8px;padding:6px;font-family:inherit;font-size:0.92rem"></label>
+    <label>Races: <input type="number" id="n-races" min="1" max="100" style="width:64px;border:1px solid #c5d8e8;border-radius:8px;padding:6px;font-family:inherit;font-size:0.92rem"></label>
+    <button class="ghost-btn" id="add-boat">+ Boat</button>
+    <button class="ghost-btn" id="add-race">+ Race</button>
+    <label>Throwouts:
+      <select id="drops">
+        <option value="0">none</option>
+        <option value="1" selected>worst 1</option>
+        <option value="2">worst 2</option>
+      </select>
+    </label>
+    <button class="danger-btn" id="clear-scores">Clear all</button>
+  </div>
+  <div class="score-wrap"><table class="score" id="score-grid"></table></div>
+  <h2 style="margin-top:18px; font-size:1.15rem">Standings</h2>
+  <div class="score-wrap"><table class="score stand" id="standings"></table></div>
+  <p class="tie-note" id="score-note"></p>
+</div>
 </main>
-
 <script>
 /* =====================================================================
    LAKE CONFIG — to make this page for another lake, replace this object
@@ -145,10 +193,8 @@ const LAKE = {
   ],
   race: { x: 435, y: 220 }   // open water west of George Island
 };
-
 const CX = LAKE.race.x, CY = LAKE.race.y;
 const L = 130;               // beat length, px
-
 /* ---------------- draw the lake ---------------- */
 (function drawLake() {
   let s = `<path d="${LAKE.path}" fill="#cfe3f1" stroke="#9dbed6" stroke-width="2.5"/>`;
@@ -163,7 +209,6 @@ const L = 130;               // beat length, px
   for (const ex of (LAKE.extras || [])) s += ex;
   document.getElementById('lake-shape').innerHTML = s;
 })();
-
 /* ---------------- state ---------------- */
 let windDir = 225;
 let liveDir = null, liveSpd = null, liveGust = null;
@@ -178,7 +223,6 @@ let ann = [];         // tack/jibe annotations {x, y, t}
 let prevRel = null;   // last wind-relative angle, for tack/jibe detection
 let boatTouched = false;  // boat holds station at the start until first grabbed
 let lineCenter = null;    // start/finish line anchor — stays put when the wind rotates
-
 /* ---------------- helpers ---------------- */
 const rad = d => d * Math.PI / 180;
 function vec(b) { return { x: Math.sin(rad(b)), y: -Math.cos(rad(b)) }; }
@@ -197,7 +241,6 @@ function dirArrowSVG(deg, size, color) {
     <line x1="10" y1="16" x2="10" y2="6" stroke="${color}" stroke-width="2.5"/>
     <polygon points="6,8 14,8 10,1" fill="${color}"/></g></svg>`;
 }
-
 /* ---------------- course layout (computed from wind) ---------------- */
 function layout() {
   const u = vec(windDir);
@@ -220,7 +263,6 @@ function layout() {
     marks.LEE = pt(S, u, 30);
   }
 }
-
 /* ---------------- rendering ---------------- */
 function tetra(p, size, fill, stroke, label, dy) {
   const h = size, w = size * 0.9;
@@ -291,7 +333,6 @@ function render() {
   // start & finish lines
   s += `<line x1="${marks.RC.x}" y1="${marks.RC.y}" x2="${marks.PIN.x}" y2="${marks.PIN.y}" stroke="#1a3a5c" stroke-width="1.5" stroke-dasharray="3 4"/>`;
   s += `<line x1="${marks.RC.x}" y1="${marks.RC.y}" x2="${marks.F.x}" y2="${marks.F.y}" stroke="#27ae60" stroke-width="1.5" stroke-dasharray="3 4"/>`;
-
   // course route (faint): roundings shown, both gate options drawn
   const polys = [];
   let wps = [S];
@@ -323,11 +364,9 @@ function render() {
     s += trackPath(wps);
     s += arrowAt(S, marks.W) + arrowAt(wExit, marks.J) + arrowAt(jExit, marks.LEE);
   }
-
   // wake + the user-sailed boat
   s += wakeSVG();
   s += drawBoat();
-
   // marks
   s += tetra(marks.W, 9, "#e67e22", "#b35c0e", "windward");
   if (course === 'wl') {
@@ -351,13 +390,11 @@ function render() {
   s += `<circle cx="${marks.PIN.x}" cy="${marks.PIN.y}" r="5" fill="#1a3a5c"/>
         <text x="${marks.PIN.x}" y="${marks.PIN.y + 20}" text-anchor="middle" font-family="Arial" font-size="11" fill="#445">pin</text>`;
   document.getElementById('course').innerHTML = s;
-
   // remember segments for whole-course dragging (track + start/finish lines)
   trackSegs = [];
   for (const poly of polys)
     for (let i = 1; i < poly.length; i++) trackSegs.push([poly[i - 1], poly[i]]);
   trackSegs.push([marks.RC, marks.PIN], [marks.RC, marks.F]);
-
   // wind arrow + upright label — anchored to the windward mark, follows it when dragged
   const tail = pt(marks.W, u, 78);
   const head = pt(marks.W, u, 44);
@@ -369,11 +406,9 @@ function render() {
     `<line x1="${tail.x}" y1="${tail.y}" x2="${head.x}" y2="${head.y}" stroke="#2e6da4" stroke-width="4"/>
      <polygon points="${b1.x},${b1.y} ${b2.x},${b2.y} ${tip.x},${tip.y}" fill="#2e6da4"/>
      <text x="${lab.x}" y="${lab.y + 4}" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#2e6da4">WIND</text>`;
-
   document.getElementById('wind-readout').textContent = `${compass16(windDir)} ${windDir}°`;
 }
 function relayout() { layout(); render(); }
-
 /* ---------------- dragging ---------------- */
 const svg = document.getElementById('lake');
 function svgPoint(e) {
@@ -446,7 +481,6 @@ svg.addEventListener('pointermove', e => {
 });
 svg.addEventListener('pointerup', () => { dragging = null; });
 svg.addEventListener('pointercancel', () => { dragging = null; });
-
 /* ---------------- controls ---------------- */
 const slider = document.getElementById('wind-slider');
 slider.addEventListener('input', () => { windDir = +slider.value; relayout(); });
@@ -466,13 +500,11 @@ document.getElementById('clear-wake').addEventListener('click', () => {
 document.getElementById('use-live').addEventListener('click', () => {
   if (liveDir !== null) { windDir = Math.round(liveDir); slider.value = windDir; relayout(); }
 });
-
 /* ---------------- live forecast ---------------- */
 const API = "https://api.open-meteo.com/v1/forecast?latitude=39.3978&longitude=-83.8910" +
   "&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m" +
   "&hourly=wind_speed_10m,wind_direction_10m,wind_gusts_10m" +
   "&wind_speed_unit=kn&timezone=America%2FNew_York&forecast_days=2";
-
 function strategyText(spd, gust, dir, trend) {
   const out = [];
   const ratio = spd > 0 ? gust / spd : 1;
@@ -491,14 +523,12 @@ function strategyText(spd, gust, dir, trend) {
   else out.push("<b>Wind across the lake</b> — short fetch off the shoreline trees makes it shifty and streaky near shore. Expect lanes of pressure and big lefty/righty phases; the middle is usually safer than the corners.");
   return out.map(p => `<p>${p}</p>`).join("");
 }
-
 async function loadWind() {
   try {
     const r = await fetch(API);
     const d = await r.json();
     const cur = d.current;
     liveDir = cur.wind_direction_10m; liveSpd = Math.round(cur.wind_speed_10m); liveGust = Math.round(cur.wind_gusts_10m);
-
     const now = new Date(cur.time);
     const idx0 = Math.max(0, d.hourly.time.findIndex(t => new Date(t) >= now));
     let cells = "";
@@ -512,7 +542,6 @@ async function loadWind() {
         <div class="s">${sk} kn</div><div class="m">${mph(sk)} mph</div>
         <div class="g">g ${gk} kn / ${mph(gk)} mph</div></div>`;
     }
-
     document.getElementById('brief-content').innerHTML = `
       <div class="brief">
         <div class="wind-now">
@@ -523,7 +552,6 @@ async function loadWind() {
         </div>
         <div class="hours">${cells}</div>
       </div>`;
-
     let trend = 0;
     if (idx0 + 4 < d.hourly.time.length) {
       let delta = d.hourly.wind_direction_10m[idx0 + 4] - d.hourly.wind_direction_10m[idx0];
@@ -534,7 +562,6 @@ async function loadWind() {
     const st = document.getElementById('strategy');
     st.innerHTML = strategyText(liveSpd, liveGust, liveDir, trend);
     st.style.display = 'block';
-
     windDir = Math.round(liveDir); slider.value = windDir;
     document.getElementById('use-live').style.display = 'inline-block';
     relayout();
@@ -544,9 +571,173 @@ async function loadWind() {
     relayout();
   }
 }
-
 relayout();
 loadWind();
+</script>
+<script>
+/* =====================================================================
+   SERIES SCORER — Low Point System, RRS Appendix A
+   Scores: number = finishing place; code = entrants + 1.
+   DNE is never excludable. Ties broken per A8.1 (best-to-worst list),
+   then A8.2 (last race, then next-to-last...).
+   ===================================================================== */
+(function () {
+  const KEY = 'clsa-race-scoring';
+  const CODES = ['DNC','DNS','OCS','DNF','RET','DSQ','DNE'];
+  let S = load() || { boats: ['Boat 1','Boat 2','Boat 3'], races: 3, cells: {} };
+  const grid = document.getElementById('score-grid');
+  const stand = document.getElementById('standings');
+  const note = document.getElementById('score-note');
+  const dropsSel = document.getElementById('drops');
+  if (S.drops !== undefined) dropsSel.value = String(S.drops);
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
+  function save() { S.drops = +dropsSel.value; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function cell(b, r) { return (S.cells[b + ':' + r] || '').trim(); }
+  /* parse a cell: {pts, code, valid, empty} */
+  function parse(v, entrants) {
+    if (!v) return { empty: true, valid: true };
+    const up = v.toUpperCase();
+    if (CODES.includes(up)) return { pts: entrants + 1, code: up, valid: true };
+    const n = parseInt(v, 10);
+    if (!isNaN(n) && n >= 1 && String(n) === v) return { pts: n, valid: true };
+    return { valid: false };
+  }
+  function renderGrid() {
+    let h = '<tr><th></th><th>Boat</th>';
+    for (let r = 0; r < S.races; r++) h += `<th>R${r + 1}</th>`;
+    h += '</tr>';
+    S.boats.forEach((name, b) => {
+      h += `<tr><td><button class="row-x" data-del="${b}" title="Remove boat">&times;</button></td>`;
+      h += `<td class="boatname"><input style="width:110px;text-align:left" data-name="${b}" value="${esc(name)}"></td>`;
+      for (let r = 0; r < S.races; r++) {
+        const v = cell(b, r);
+        const p = parse(v, S.boats.length);
+        const cls = !p.valid ? 'bad' : (p.code ? 'code' : '');
+        h += `<td><input class="${cls}" data-b="${b}" data-r="${r}" value="${esc(v)}" placeholder="–"></td>`;
+      }
+      h += '</tr>';
+    });
+    grid.innerHTML = h;
+  }
+  function compute() {
+    const entrants = S.boats.length;
+    const drops = +dropsSel.value;
+    // count races that have at least one score, so throwouts apply to sailed races
+    let sailed = 0;
+    for (let r = 0; r < S.races; r++) if (S.boats.some((_, b) => cell(b, r))) sailed++;
+    const rows = S.boats.map((name, b) => {
+      const scores = [];           // per race: {pts, code, excl}
+      for (let r = 0; r < S.races; r++) {
+        const p = parse(cell(b, r), entrants);
+        scores.push(p.valid && !p.empty ? { pts: p.pts, code: p.code || null } : { pts: null });
+      }
+      // pick worst excludable scores to drop
+      const idx = scores.map((s, i) => ({ ...s, i }))
+        .filter(s => s.pts !== null && s.code !== 'DNE')
+        .sort((a, z) => z.pts - a.pts)
+        .slice(0, Math.min(drops, Math.max(0, sailed - 1)))
+        .map(s => s.i);
+      idx.forEach(i => scores[i].excl = true);
+      const total = scores.reduce((t, s) => t + (s.pts ?? 0), 0);
+      const net = scores.reduce((t, s) => t + (s.excl ? 0 : (s.pts ?? 0)), 0);
+      return { name, b, scores, total, net };
+    });
+    // ties: A8.1 best-to-worst list, then A8.2 last race back
+    rows.sort((a, z) => {
+      if (a.net !== z.net) return a.net - z.net;
+      const A = a.scores.filter(s => s.pts !== null).map(s => s.pts).sort((x, y) => x - y);
+      const Z = z.scores.filter(s => s.pts !== null).map(s => s.pts).sort((x, y) => x - y);
+      for (let i = 0; i < Math.max(A.length, Z.length); i++) {
+        const av = A[i] ?? Infinity, zv = Z[i] ?? Infinity;
+        if (av !== zv) return av - zv;
+      }
+      for (let r = S.races - 1; r >= 0; r--) {
+        const av = a.scores[r].pts ?? Infinity, zv = z.scores[r].pts ?? Infinity;
+        if (av !== zv) return av - zv;
+      }
+      return 0;
+    });
+    return { rows, sailed, drops };
+  }
+  function renderStandings() {
+    const { rows, sailed, drops } = compute();
+    let h = '<tr><th>Place</th><th>Boat</th>';
+    for (let r = 0; r < S.races; r++) h += `<th>R${r + 1}</th>`;
+    h += '<th>Total</th><th>Net</th></tr>';
+    rows.forEach((row, i) => {
+      h += `<tr><td>${i + 1}</td><td class="boatname">${esc(row.name)}</td>`;
+      row.scores.forEach(s => {
+        const txt = s.pts === null ? '–' : (s.code ? `${s.code} ${s.pts}` : s.pts);
+        h += `<td>${s.excl ? `<span class="drop-mark">${txt}</span>` : txt}</td>`;
+      });
+      h += `<td class="dropped">${row.total}</td><td class="pts">${row.net}</td></tr>`;
+    });
+    stand.innerHTML = h;
+    note.textContent = sailed === 0 ? 'Enter some finishes above to see standings.' :
+      `${sailed} race${sailed === 1 ? '' : 's'} scored · codes score ${S.boats.length + 1} points (entrants + 1)` +
+      (drops ? ` · struck-through scores are thrown out (DNE can't be)` : '');
+  }
+  function refresh() { renderGrid(); renderStandings(); syncCounts(); save(); }
+  grid.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.name !== undefined) { S.boats[+t.dataset.name] = t.value; renderStandings(); save(); return; }
+    if (t.dataset.b !== undefined) {
+      S.cells[t.dataset.b + ':' + t.dataset.r] = t.value;
+      const p = parse(t.value.trim(), S.boats.length);
+      t.className = !p.valid ? 'bad' : (p.code ? 'code' : '');
+      renderStandings(); save();
+    }
+  });
+  grid.addEventListener('click', e => {
+    const del = e.target.dataset.del;
+    if (del === undefined) return;
+    const b = +del;
+    if (!confirm(`Remove ${S.boats[b] || 'this boat'}?`)) return;
+    S.boats.splice(b, 1);
+    const cells = {};
+    Object.entries(S.cells).forEach(([k, v]) => {
+      const [cb, cr] = k.split(':').map(Number);
+      if (cb === b) return;
+      cells[(cb > b ? cb - 1 : cb) + ':' + cr] = v;
+    });
+    S.cells = cells;
+    refresh();
+  });
+  document.getElementById('add-boat').onclick = () => { S.boats.push('Boat ' + (S.boats.length + 1)); refresh(); };
+  document.getElementById('add-race').onclick = () => { S.races++; refresh(); };
+  const nBoats = document.getElementById('n-boats');
+  const nRaces = document.getElementById('n-races');
+  function syncCounts() { nBoats.value = S.boats.length; nRaces.value = S.races; }
+  nBoats.onchange = () => {
+    let n = Math.max(1, Math.min(200, parseInt(nBoats.value, 10) || S.boats.length));
+    if (n > S.boats.length) { while (S.boats.length < n) S.boats.push('Boat ' + (S.boats.length + 1)); }
+    else if (n < S.boats.length) {
+      const hasData = S.boats.some((_, b) => b >= n && [...Array(S.races).keys()].some(r => cell(b, r)));
+      if (hasData && !confirm(`Removing boats ${n + 1}–${S.boats.length} deletes their scores. Continue?`)) { syncCounts(); return; }
+      S.boats.length = n;
+      Object.keys(S.cells).forEach(k => { if (+k.split(':')[0] >= n) delete S.cells[k]; });
+    }
+    refresh();
+  };
+  nRaces.onchange = () => {
+    let n = Math.max(1, Math.min(100, parseInt(nRaces.value, 10) || S.races));
+    if (n < S.races) {
+      const hasData = S.boats.some((_, b) => [...Array(S.races).keys()].some(r => r >= n && cell(b, r)));
+      if (hasData && !confirm(`Removing races ${n + 1}–${S.races} deletes their scores. Continue?`)) { syncCounts(); return; }
+      Object.keys(S.cells).forEach(k => { if (+k.split(':')[1] >= n) delete S.cells[k]; });
+    }
+    S.races = n;
+    refresh();
+  };
+  dropsSel.onchange = () => { renderStandings(); save(); };
+  document.getElementById('clear-scores').onclick = () => {
+    if (!confirm('Clear all boats and scores?')) return;
+    S = { boats: ['Boat 1','Boat 2','Boat 3'], races: 3, cells: {} };
+    refresh();
+  };
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+  refresh();
+})();
 </script>
 </body>
 </html>
