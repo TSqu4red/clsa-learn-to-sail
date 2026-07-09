@@ -75,7 +75,7 @@
   .drawer .close { position: absolute; top: 12px; right: 12px; background: none; border: none; color: #cfdce8; font-size: 22px; cursor: pointer; }
   @media (max-width: 640px) {
     header { display: none; }
-    nav { display: none; }
+    nav:not(.drawer) { display: none; }
     .appbar { display: flex; }
     main { padding-top: 16px; }
   }
