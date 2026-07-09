@@ -64,7 +64,7 @@
   .appbar .ab-title { font-size: 1.05rem; letter-spacing: .5px; }
   .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.4); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40; }
   .scrim.open { opacity: 1; pointer-events: auto; }
-  .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 78%; max-width: 300px; background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 100%); color: #fff; z-index: 50; transform: translateX(-100%); transition: transform .22s ease; padding: 16px 14px; overflow-y: auto; }
+  .drawer { display: block; position: fixed; top: 0; left: 0; bottom: 0; width: 78%; max-width: 300px; background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 100%); color: #fff; z-index: 50; transform: translateX(-100%); transition: transform .22s ease; padding: 16px 14px; overflow-y: auto; }
   .drawer.open { transform: none; }
   .drawer .dh { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.15); }
   .drawer .dh img { height: 30px; }
