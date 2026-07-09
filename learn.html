@@ -92,7 +92,10 @@
     margin-bottom: 20px;
   }
   /* Points of sail */
-  .pos-layout { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center; }
+  .pos-layout { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; justify-content: center; }
+  .pos-visual { display: flex; flex-direction: column; align-items: center; width: 340px; max-width: 100%; }
+  #pos-svg { width: 100%; height: auto; }
+  .pos-visual input[type=range] { width: 100%; }
   .pos-info { flex: 1; min-width: 260px; }
   .pos-name { font-size: 1.5rem; color: var(--navy); font-weight: bold; margin-bottom: 6px; }
   .pos-name.nogo { color: var(--red); }
@@ -208,6 +211,7 @@
   <p class="intro">A sailboat can't sail straight into the wind — but it can sail almost everywhere else. Drag the slider to turn the boat and watch how the sail trim changes. The wind is always blowing from the top of the circle.</p>
   <div class="card">
     <div class="pos-layout">
+      <div class="pos-visual">
       <svg id="pos-svg" viewBox="0 0 340 340" width="320" height="320" aria-label="Points of sail diagram">
         <!-- compass circle -->
         <circle cx="170" cy="170" r="140" fill="#eef5fb" stroke="#b8cfe0" stroke-width="2"/>
@@ -237,13 +241,14 @@
           </g>
         </g>
       </svg>
+        <input type="range" id="pos-slider" min="-180" max="180" value="-50" step="1">
+        <div class="slider-label">← turn to port &nbsp;|&nbsp; turn to starboard →</div>
+      </div>
       <div class="pos-info">
         <div class="pos-name" id="pos-name">Close Hauled</div>
         <div id="pos-desc"></div>
         <div class="pos-tip" id="pos-tip"></div>
         <div class="pos-caution" id="pos-caution"></div>
-        <input type="range" id="pos-slider" min="-180" max="180" value="-50" step="1">
-        <div class="slider-label">← turn to port &nbsp;|&nbsp; turn to starboard →</div>
       </div>
     </div>
   </div>
