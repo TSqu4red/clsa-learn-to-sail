@@ -74,15 +74,50 @@
   .tie-note { font-size: 0.85rem; color: #889; font-style: italic; margin-top: 6px; }
   .row-x { background: none; border: none; color: #b8c4cf; cursor: pointer; font-size: 1rem; padding: 0 4px; }
   .row-x:hover { color: var(--red); }
+  /* mobile app shell */
+  .appbar { display: none; align-items: center; gap: 10px; background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 100%); color: #fff; padding: 9px 12px; position: sticky; top: 0; z-index: 30; }
+  .appbar .menu { background: none; border: none; color: #fff; font-size: 22px; line-height: 1; cursor: pointer; padding: 2px 6px; }
+  .appbar .ab-burgee { height: 26px; }
+  .appbar .ab-title { font-size: 1.05rem; letter-spacing: .5px; }
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.4); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40; }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 78%; max-width: 300px; background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 100%); color: #fff; z-index: 50; transform: translateX(-100%); transition: transform .22s ease; padding: 16px 14px; overflow-y: auto; }
+  .drawer.open { transform: none; }
+  .drawer .dh { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.15); }
+  .drawer .dh img { height: 30px; }
+  .drawer .dh b { font-size: 1.1rem; letter-spacing: .5px; }
+  .drawer .dsect { font-size: .72rem; letter-spacing: 1px; color: #9fb4cc; margin: 16px 0 4px; text-transform: uppercase; }
+  .drawer a { display: block; color: #e8eef5; text-decoration: none; padding: 10px 6px; border-bottom: 1px solid rgba(255,255,255,.07); font-size: 1rem; }
+  .drawer a.tool { color: #f0c75e; }
+  .drawer .close { position: absolute; top: 12px; right: 12px; background: none; border: none; color: #cfdce8; font-size: 22px; cursor: pointer; }
   @media (max-width: 640px) {
-    header { padding: 14px 16px 12px; }
-    header h1 { font-size: 1.25rem; }
-    header p { font-size: 0.85rem; }
-    img.burgee { height: 40px; }
+    header { display: none; }
+    .appbar { display: flex; }
+    main { padding-top: 14px; }
   }
 </style>
 </head>
 <body>
+<div class="appbar">
+  <button class="menu" id="menuBtn" aria-label="Open menu">&#9776;</button>
+  <img class="ab-burgee" src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt="">
+  <span class="ab-title">Race Day</span>
+</div>
+<div class="scrim" id="scrim"></div>
+<nav class="drawer" id="drawer" aria-label="Site menu">
+  <button class="close" id="drawerClose" aria-label="Close menu">&times;</button>
+  <div class="dh"><img src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt=""><b>CLSA</b></div>
+  <div class="dsect">Tools</div>
+  <a class="tool" href="index.html">Learn to Sail</a>
+  <a class="tool" href="racecourse.html">Race Day</a>
+  <a class="tool" href="rigging.html">Fleet Rigging</a>
+  <div class="dsect">This page</div>
+  <a href="#sec-wind" data-close>Wind Brief</a>
+  <a href="#sec-course" data-close>Course Visualizer</a>
+  <a href="#sec-scoring" data-close>Race Scoring</a>
+  <div class="dsect">Club</div>
+  <a href="https://clsa.clubexpress.com" target="_blank">CLSA website &#8599;</a>
+</nav>
 <header>
   <a href="https://clsa.clubexpress.com" title="Cowan Lake Sailing Association" target="_blank"><img class="burgee" height="56" src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt="CLSA burgee"></a>
   <h1>Race Day at Cowan Lake</h1>
@@ -90,12 +125,12 @@
   <a href="index.html">&larr; back to Learn to Sail</a>
 </header>
 <main>
-<div class="card">
+<div class="card" id="sec-wind">
   <h2>Wind Brief</h2>
   <div id="brief-content"><p style="color:#889">Fetching the Cowan Lake forecast…</p></div>
   <div class="strategy" id="strategy" style="display:none"></div>
 </div>
-<div class="card">
+<div class="card" id="sec-course">
   <h2>Course Visualizer</h2>
   <div class="controls">
     <span class="seg" id="course-seg">
@@ -137,7 +172,7 @@
   <p><b>Start:</b> cross the line between the committee boat and the pin, sailing upwind. <b>Windward mark:</b> leave it to port, then the short hop to the small yellow <b>offset mark</b> keeps boats clear of traffic still beating up. <b>Leeward gate:</b> two orange tetrahedrons — pick either one, round it the natural way, and head back upwind. Choosing the gate side that takes you toward the favored side of the next beat is free distance. <b>Finish:</b> between the committee boat and the green mark off its starboard side.</p>
   <p><b>Triangle (Olympic):</b> beat to the windward mark, bear away onto the reach to the <b>jibe mark</b>, jibe, reach back to the leeward mark, and beat again. Reaches reward clear air — defend high early, then drive low for speed.</p>
 </div>
-<div class="card">
+<div class="card" id="sec-scoring">
   <h2>Race Scoring</h2>
   <p>CLSA series are scored with the <b>Low Point System</b> (Racing Rules of Sailing, Appendix A): your finishing place is your score — 1st = 1 point, 2nd = 2, and so on — and the <b>lowest total wins the series</b>. A boat that doesn't get a clean finish is scored as if she finished one place behind every boat entered in the series. With enough races sailed, each boat <b>throws out</b> her worst score (or two), so one bad day doesn't sink a season.</p>
   <div class="codes">
@@ -743,6 +778,18 @@ loadWind();
   };
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
   refresh();
+})();
+</script>
+<script>
+(function () {
+  const drawer = document.getElementById('drawer');
+  const scrim = document.getElementById('scrim');
+  const open = () => { drawer.classList.add('open'); scrim.classList.add('open'); };
+  const close = () => { drawer.classList.remove('open'); scrim.classList.remove('open'); };
+  document.getElementById('menuBtn').addEventListener('click', open);
+  document.getElementById('drawerClose').addEventListener('click', close);
+  scrim.addEventListener('click', close);
+  drawer.querySelectorAll('a[data-close]').forEach(a => a.addEventListener('click', close));
 })();
 </script>
 </body>
