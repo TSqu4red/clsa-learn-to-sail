@@ -82,16 +82,17 @@
     .picker button { padding: 7px 12px; font-size: 0.92rem; }
   }
 </style>
+<script>window.clsaToggle=function(o){var d=document.getElementById("drawer"),s=document.getElementById("scrim");if(d&&s){d.classList.toggle("open",o);s.classList.toggle("open",o);}};</script>
 </head>
 <body>
 <div class="appbar">
-  <button class="menu" id="menuBtn" aria-label="Open menu"><svg viewBox="0 0 24 18" width="25" height="19" aria-hidden="true"><g fill="none" stroke="#e9e0cb" stroke-width="2.2" stroke-linecap="round"><path d="M2 3 q2 -1.6 4 0 t4 0 t4 0 t4 0"/><path d="M2 9 q2 -1.6 4 0 t4 0 t4 0 t4 0"/><path d="M2 15 q2 -1.6 4 0 t4 0 t4 0 t4 0"/></g></svg></button>
+  <button class="menu" id="menuBtn" aria-label="Open menu" onclick="clsaToggle(true)"><svg viewBox="0 0 24 18" width="25" height="19" aria-hidden="true"><g fill="none" stroke="#e9e0cb" stroke-width="2.2" stroke-linecap="round"><path d="M2 3 q2 -1.6 4 0 t4 0 t4 0 t4 0"/><path d="M2 9 q2 -1.6 4 0 t4 0 t4 0 t4 0"/><path d="M2 15 q2 -1.6 4 0 t4 0 t4 0 t4 0"/></g></svg></button>
   <img class="ab-burgee" src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt="">
   <span class="ab-title">Fleet Rigging</span>
 </div>
-<div class="scrim" id="scrim"></div>
+<div class="scrim" id="scrim" onclick="clsaToggle(false)"></div>
 <nav class="drawer" id="drawer" aria-label="Site menu">
-  <button class="close" id="drawerClose" aria-label="Close menu">&times;</button>
+  <button class="close" id="drawerClose" aria-label="Close menu" onclick="clsaToggle(false)">&times;</button>
   <div class="dh"><img src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt=""><b>CLSA</b></div>
   <div class="dsect">Tools</div>
   <a class="tool" href="index.html">Home</a>
