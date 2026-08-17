@@ -190,6 +190,11 @@
   <h2 style="margin-top:18px">Series Scorer</h2>
   <p>Enter each boat's finishing place per race, or a code (DNF, DNS, DSQ…). Throwouts and ties are handled automatically. Everything saves in your browser.</p>
   <div class="score-btns">
+    <label>Series: <input type="text" id="m-name" placeholder="e.g. Sunday Series" style="width:170px;border:1px solid #c5d8e8;border-radius:8px;padding:6px;font-family:inherit;font-size:0.92rem"></label>
+    <label>Fleet/class: <input type="text" id="m-fleet" placeholder="e.g. Highlander" style="width:130px;border:1px solid #c5d8e8;border-radius:8px;padding:6px;font-family:inherit;font-size:0.92rem"></label>
+    <label>Date: <input type="date" id="m-date" style="border:1px solid #c5d8e8;border-radius:8px;padding:6px;font-family:inherit;font-size:0.92rem"></label>
+  </div>
+  <div class="score-btns">
     <label>Boats: <input type="number" id="n-boats" min="1" max="200" style="width:64px;border:1px solid #c5d8e8;border-radius:8px;padding:6px;font-family:inherit;font-size:0.92rem"></label>
     <label>Races: <input type="number" id="n-races" min="1" max="100" style="width:64px;border:1px solid #c5d8e8;border-radius:8px;padding:6px;font-family:inherit;font-size:0.92rem"></label>
     <button class="ghost-btn" id="add-boat">+ Boat</button>
@@ -207,6 +212,13 @@
   <h2 style="margin-top:18px; font-size:1.15rem">Standings</h2>
   <div class="score-wrap"><table class="score stand" id="standings"></table></div>
   <p class="tie-note" id="score-note"></p>
+  <div class="score-btns" style="margin-top:12px">
+    <button class="ghost-btn" id="save-day">Save this race day</button>
+    <button class="ghost-btn" id="csv-now">Download results (CSV)</button>
+  </div>
+  <h2 style="margin-top:18px; font-size:1.15rem">Saved race days</h2>
+  <p class="tie-note" id="archive-empty" style="display:none">No race days saved yet — score a day and hit &ldquo;Save this race day&rdquo; to keep it here.</p>
+  <div class="score-wrap"><table class="score" id="archive"></table></div>
 </div>
 </main>
 <script>
@@ -627,12 +639,25 @@ loadWind();
 (function () {
   const KEY = 'clsa-race-scoring';
   const CODES = ['DNC','DNS','OCS','DNF','RET','DSQ','DNE'];
-  let S = load() || { boats: ['Boat 1','Boat 2','Boat 3'], races: 3, cells: {} };
+  function todayISO() { const d = new Date(), p = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+  function freshState() { return { boats: ['Boat 1','Boat 2','Boat 3'], races: 3, cells: {}, name: '', fleet: '', date: todayISO() }; }
+  let S = load() || freshState();
+  // older saved states predate the metadata fields
+  if (S.name === undefined) S.name = '';
+  if (S.fleet === undefined) S.fleet = '';
+  if (S.date === undefined) S.date = todayISO();
   const grid = document.getElementById('score-grid');
   const stand = document.getElementById('standings');
   const note = document.getElementById('score-note');
   const dropsSel = document.getElementById('drops');
   if (S.drops !== undefined) dropsSel.value = String(S.drops);
+  const mName = document.getElementById('m-name');
+  const mFleet = document.getElementById('m-fleet');
+  const mDate = document.getElementById('m-date');
+  function syncMeta() { mName.value = S.name || ''; mFleet.value = S.fleet || ''; mDate.value = S.date || ''; }
+  mName.oninput = () => { S.name = mName.value; save(); };
+  mFleet.oninput = () => { S.fleet = mFleet.value; save(); };
+  mDate.oninput = () => { S.date = mDate.value; save(); };
   function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
   function save() { S.drops = +dropsSel.value; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   function cell(b, r) { return (S.cells[b + ':' + r] || '').trim(); }
@@ -775,10 +800,116 @@ loadWind();
   dropsSel.onchange = () => { renderStandings(); save(); };
   document.getElementById('clear-scores').onclick = () => {
     if (!confirm('Clear all boats and scores?')) return;
-    S = { boats: ['Boat 1','Boat 2','Boat 3'], races: 3, cells: {} };
+    S = freshState();
+    syncMeta();
     refresh();
   };
+  /* ---- race day archive ---- */
+  const AKEY = 'clsa-race-archive';
+  const archTable = document.getElementById('archive');
+  const archEmpty = document.getElementById('archive-empty');
+  function loadArchive() { try { const a = JSON.parse(localStorage.getItem(AKEY)); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function saveArchive(a) { try { localStorage.setItem(AKEY, JSON.stringify(a)); } catch (e) {} }
+  function standingsNow(rows) {
+    return rows.map((r, i) => ({ place: i + 1, b: r.b, boat: r.name, net: r.net, total: r.total }));
+  }
+  function renderArchive() {
+    const arch = loadArchive().sort((a, z) => z.id - a.id);
+    if (!arch.length) { archTable.innerHTML = ''; archEmpty.style.display = 'block'; return; }
+    archEmpty.style.display = 'none';
+    let h = '<tr><th>Date</th><th>Fleet</th><th>Series</th><th>Boats</th><th>Races</th><th>Winner</th><th></th></tr>';
+    arch.forEach(rec => {
+      const winner = (rec.standings && rec.standings.length) ? rec.standings[0].boat : '–';
+      h += `<tr><td>${esc(rec.date || '–')}</td><td>${esc(rec.fleet || '–')}</td><td>${esc(rec.name || '–')}</td>
+        <td>${rec.boats.length}</td><td>${rec.sailed}</td><td class="boatname">${esc(winner)}</td>
+        <td style="white-space:nowrap"><button class="ghost-btn" data-load="${rec.id}">Load</button>
+        <button class="ghost-btn" data-csv="${rec.id}">CSV</button>
+        <button class="row-x" data-zap="${rec.id}" title="Delete this race day">&times;</button></td></tr>`;
+    });
+    archTable.innerHTML = h;
+  }
+  document.getElementById('save-day').onclick = () => {
+    const { rows, sailed } = compute();
+    if (!sailed) { alert('Nothing to save yet — score at least one race first.'); return; }
+    if (!S.date && !confirm('No date set for this race day. Save without one?')) return;
+    const arch = loadArchive();
+    const dup = arch.some(r => (r.date || '') === (S.date || '') && (r.fleet || '') === (S.fleet || '') && (r.name || '') === (S.name || ''));
+    if (dup && !confirm('A race day with this date, fleet and series is already saved. Save another copy?')) return;
+    arch.push({
+      id: Date.now(), savedAt: new Date().toISOString(),
+      name: S.name || '', fleet: S.fleet || '', date: S.date || '',
+      drops: +dropsSel.value, boats: S.boats.slice(), races: S.races,
+      cells: { ...S.cells }, sailed, standings: standingsNow(rows)
+    });
+    saveArchive(arch);
+    renderArchive();
+  };
+  archTable.addEventListener('click', e => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    const arch = loadArchive();
+    if (t.dataset.load !== undefined) {
+      const rec = arch.find(r => String(r.id) === t.dataset.load);
+      if (!rec) return;
+      const hasScores = Object.values(S.cells).some(v => v && v.trim());
+      if (hasScores && !confirm('Load this race day? The scores currently in the grid will be replaced.')) return;
+      S = { boats: rec.boats.slice(), races: rec.races, cells: { ...rec.cells },
+            name: rec.name || '', fleet: rec.fleet || '', date: rec.date || '' };
+      dropsSel.value = String(rec.drops ?? 1);
+      syncMeta();
+      refresh();
+    } else if (t.dataset.csv !== undefined) {
+      const rec = arch.find(r => String(r.id) === t.dataset.csv);
+      if (rec) downloadCSV(rec);
+    } else if (t.dataset.zap !== undefined) {
+      if (!confirm('Delete this saved race day? This can\'t be undone.')) return;
+      saveArchive(arch.filter(r => String(r.id) !== t.dataset.zap));
+      renderArchive();
+    }
+  });
+  /* ---- CSV export ---- */
+  function csvFor(rec) {
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [];
+    lines.push([q('Series: ' + (rec.name || '')), q('Fleet: ' + (rec.fleet || '')),
+                q('Date: ' + (rec.date || '')), q('Throwouts: ' + (rec.drops || 0))].join(','));
+    const head = [q('Place'), q('Boat')];
+    for (let r = 0; r < rec.races; r++) head.push(q('R' + (r + 1)));
+    head.push(q('Total'), q('Net'));
+    lines.push(head.join(','));
+    (rec.standings || []).forEach(st => {
+      let b = st.b;
+      if (!(b >= 0 && rec.boats[b] === st.boat)) b = rec.boats.indexOf(st.boat);
+      const row = [q(st.place), q(st.boat)];
+      for (let r = 0; r < rec.races; r++) row.push(q(b < 0 ? '' : (rec.cells[b + ':' + r] || '').trim()));
+      row.push(q(st.total), q(st.net));
+      lines.push(row.join(','));
+    });
+    return lines.join('\r\n') + '\r\n';
+  }
+  function downloadCSV(rec) {
+    const slug = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const fname = ['clsa', slug(rec.date), slug(rec.fleet), slug(rec.name)].filter(Boolean).join('-') + '.csv';
+    const blob = new Blob([csvFor(rec)], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+  document.getElementById('csv-now').onclick = () => {
+    const { rows, sailed } = compute();
+    if (!sailed) { alert('Score at least one race before exporting.'); return; }
+    downloadCSV({
+      name: S.name || '', fleet: S.fleet || '', date: S.date || '', drops: +dropsSel.value,
+      boats: S.boats, races: S.races, cells: S.cells, standings: standingsNow(rows)
+    });
+  };
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+  syncMeta();
+  renderArchive();
   refresh();
 })();
 </script>
@@ -794,5 +925,6 @@ loadWind();
   drawer.querySelectorAll('a[data-close]').forEach(a => a.addEventListener('click', close));
 })();
 </script>
+<script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>

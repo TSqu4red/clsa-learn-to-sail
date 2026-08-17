@@ -742,5 +742,6 @@ renderGlossary("");
     a.addEventListener('click', () => { window.showTab(a.dataset.tab); close(); }));
 })();
 </script>
+<script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>
