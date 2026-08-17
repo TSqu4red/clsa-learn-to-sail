@@ -216,6 +216,8 @@
   <div class="score-btns" style="margin-top:12px">
     <button class="ghost-btn" id="save-day">Save this race day</button>
     <button class="ghost-btn" id="csv-now">Download results (CSV)</button>
+    <button class="ghost-btn" id="share-day">Share results (link)</button>
+    <span class="tie-note" id="share-note"></span>
   </div>
   <h2 style="margin-top:18px; font-size:1.15rem">Saved race days</h2>
   <p class="tie-note" id="archive-empty" style="display:none">No race days saved yet — score a day and hit &ldquo;Save this race day&rdquo; to keep it here.</p>
@@ -941,9 +943,112 @@ loadWind();
     });
   };
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+  /* ---- share-a-link: the whole race day packed into the URL hash ---- */
+  function dayRecord() {
+    const { groups, sailed } = compute();
+    return { sailed, rec: {
+      v: 1, name: S.name || '', fleet: S.fleet || '', date: S.date || '', drops: +dropsSel.value,
+      boats: S.boats.slice(), fleets: S.fleets.slice(), races: S.races,
+      cells: { ...S.cells }, sailed, standings: standingsNow(groups)
+    } };
+  }
+  async function encodeDay(rec) {
+    const bytes = new TextEncoder().encode(JSON.stringify(rec));
+    let out = bytes, tag = 'j';
+    try {
+      const cs = new CompressionStream('gzip');
+      out = new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(cs)).arrayBuffer());
+      tag = 'z';
+    } catch (e) {}
+    let s = '';
+    out.forEach(b => s += String.fromCharCode(b));
+    return tag + btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  async function decodeDay(str) {
+    const bytes = Uint8Array.from(atob(str.slice(1).replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+    if (str[0] === 'z') {
+      const ds = new DecompressionStream('gzip');
+      return JSON.parse(new TextDecoder().decode(await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer()));
+    }
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+  const shareNote = document.getElementById('share-note');
+  document.getElementById('share-day').onclick = async () => {
+    const { sailed, rec } = dayRecord();
+    if (!sailed) { alert('Score at least one race before sharing.'); return; }
+    const url = location.origin + location.pathname + '#day=' + await encodeDay(rec);
+    const label = ['CLSA results', rec.date, rec.name].filter(Boolean).join(' — ');
+    if (navigator.share) {
+      try { await navigator.share({ title: label, url }); shareNote.textContent = 'Shared!'; return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+    try { await navigator.clipboard.writeText(url); shareNote.textContent = 'Link copied — text it to the fleet!'; }
+    catch (e) { prompt('Copy this link:', url); }
+    setTimeout(() => { shareNote.textContent = ''; }, 6000);
+  };
+  /* opened from a shared link? show a read-only results card at the top */
+  function sharedTables(rec) {
+    const order = [], byKey = {};
+    (rec.standings || []).forEach(st => {
+      const f = (st.fleet || '').trim(), k = f.toLowerCase();
+      if (!byKey[k]) { byKey[k] = { fleet: f, rows: [] }; order.push(k); }
+      byKey[k].rows.push(st);
+    });
+    const multi = order.length > 1 || (order[0] && byKey[order[0]].fleet);
+    let h = '';
+    order.forEach(k => {
+      const g = byKey[k];
+      h += '<div class="score-wrap"><table class="score stand">';
+      if (multi) h += `<tr><th colspan="${rec.races + 4}" style="text-align:left">${esc(g.fleet || 'No fleet')}</th></tr>`;
+      h += '<tr><th>Place</th><th>Boat</th>';
+      for (let r = 0; r < rec.races; r++) h += `<th>R${r + 1}</th>`;
+      h += '<th>Total</th><th>Net</th></tr>';
+      g.rows.forEach(st => {
+        let b = st.b;
+        if (!(b >= 0 && rec.boats[b] === st.boat)) b = rec.boats.indexOf(st.boat);
+        h += `<tr><td>${st.place}</td><td class="boatname">${esc(st.boat)}</td>`;
+        for (let r = 0; r < rec.races; r++) h += `<td>${esc((b < 0 ? '' : (rec.cells[b + ':' + r] || '').trim()) || '–')}</td>`;
+        h += `<td class="dropped">${st.total}</td><td class="pts">${st.net}</td></tr>`;
+      });
+      h += '</table></div>';
+    });
+    return h;
+  }
+  async function showShared() {
+    const m = location.hash.match(/^#day=(.+)$/);
+    if (!m) return;
+    let rec;
+    try { rec = await decodeDay(m[1]); } catch (e) { return; }
+    if (!rec || !Array.isArray(rec.boats) || !Array.isArray(rec.standings)) return;
+    const card = document.createElement('div');
+    card.className = 'card';
+    const line = [rec.date, rec.fleet, rec.name].filter(Boolean).map(esc).join(' · ');
+    card.innerHTML = `<h2>Shared Race Results</h2>
+      <p class="tie-note" style="margin-bottom:8px">${line || 'Race day'} · ${rec.sailed || '?'} race${rec.sailed === 1 ? '' : 's'} scored · shared read-only — the scorer's copy is the official one</p>
+      ${sharedTables(rec)}
+      <div class="score-btns" style="margin-top:10px">
+        <button class="ghost-btn" id="shared-keep">Save to my race days</button>
+        <button class="ghost-btn" id="shared-close">Dismiss</button>
+      </div>`;
+    document.querySelector('main').prepend(card);
+    card.querySelector('#shared-keep').onclick = () => {
+      const arch = loadArchive();
+      const dup = arch.some(r => (r.date || '') === (rec.date || '') && (r.fleet || '') === (rec.fleet || '') && (r.name || '') === (rec.name || ''));
+      if (dup && !confirm('A race day with this date, fleet and series is already in your saved days. Save another copy?')) return;
+      arch.push({ ...rec, id: Date.now(), savedAt: new Date().toISOString() });
+      saveArchive(arch);
+      renderArchive();
+      card.querySelector('#shared-keep').textContent = 'Saved ✓';
+    };
+    card.querySelector('#shared-close').onclick = () => {
+      card.remove();
+      history.replaceState(null, '', location.pathname + location.search);
+    };
+  }
   syncMeta();
   renderArchive();
   refresh();
+  showShared();
 })();
 </script>
 <script>

@@ -17,6 +17,10 @@ Cross-device source of truth for what's built, what's next, and what's parked.
   each fleet is placed and scored as its own regatta (entrants+1 codes, throwouts,
   A8 tie-breaks all within the fleet). Standings group by fleet; CSV gains a Fleet
   column; archive winner shows first place per fleet.
+- **Share-a-link results** (August 2026) — "Share results (link)" packs the whole race
+  day (gzip → base64url) into the page URL hash; recipients see a read-only results
+  card on their phones and can save a copy to their own archive. No backend; uses the
+  phone share sheet where available, clipboard otherwise.
 - **Offline service worker** (August 2026) — `sw.js` precaches all four pages,
   network-first with cache fallback for same-origin GETs; weather API passes through.
   **Bump `VERSION` in `sw.js` on any deploy that should invalidate cached pages.**
@@ -29,7 +33,10 @@ Cross-device source of truth for what's built, what's next, and what's parked.
 
 ## Parked
 
-- **Shared/synced standings** — needs a backend; out of scope until the club asks.
+- **Shared/synced standings (permanent results page)** — the club asked (Aug 2026);
+  share-a-link covers the immediate need. A live results page on the site still needs
+  a small backend (Vercel KV/Blob + publish PIN); revisit if the club wants a lasting
+  archive every visitor can browse.
 
 ## Workflow notes
 
