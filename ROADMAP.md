@@ -13,6 +13,10 @@ Cross-device source of truth for what's built, what's next, and what's parked.
   "Save this race day" archives full results (grid + standings) to `localStorage`
   under `clsa-race-archive`, with load / per-day CSV / delete; "Download results (CSV)"
   exports current standings with raw race entries including codes.
+- **Multi-fleet scoring** (August 2026) — per-boat Fleet column in the scorer grid;
+  each fleet is placed and scored as its own regatta (entrants+1 codes, throwouts,
+  A8 tie-breaks all within the fleet). Standings group by fleet; CSV gains a Fleet
+  column; archive winner shows first place per fleet.
 - **Offline service worker** (August 2026) — `sw.js` precaches all four pages,
   network-first with cache fallback for same-origin GETs; weather API passes through.
   **Bump `VERSION` in `sw.js` on any deploy that should invalidate cached pages.**
