@@ -21,6 +21,11 @@ Cross-device source of truth for what's built, what's next, and what's parked.
   day (gzip → base64url) into the page URL hash; recipients see a read-only results
   card on their phones and can save a copy to their own archive. No backend; uses the
   phone share sheet where available, clipboard otherwise.
+- **Season standings + easier grid editing** (August 2026) — "Season standings" under
+  the archive merges all saved race days of a series into one score (boats matched by
+  name across days, DNC for a boat absent a whole day, throwouts from the scorer's
+  setting), with season CSV and share link. Also − Boat / − Race buttons beside the
+  + buttons.
 - **Offline service worker** (August 2026) — `sw.js` precaches all four pages,
   network-first with cache fallback for same-origin GETs; weather API passes through.
   **Bump `VERSION` in `sw.js` on any deploy that should invalidate cached pages.**
