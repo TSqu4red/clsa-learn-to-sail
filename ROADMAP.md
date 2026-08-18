@@ -46,16 +46,44 @@ Cross-device source of truth for what's built, what's next, and what's parked.
 - **Header-less embed variants** for the ClubExpress integration — pending board
   approval.
 
+## How the club actually scores (from the scorekeeper's 2026 Scoring.xlsx, read Aug 2026)
+
+One sheet per fleet (Thistle, Highlander, MC Scow, Snipe, Flying Scot, Lightning,
+plus one-off event sheets like the Hornich Club Championship). Skippers listed by
+NAME + sail number. The year is divided into series: Spring, Memorial Day, Summer,
+4th of July, August, Labor Day, Fall — plus a season-wide summary (2026: 60 races
+total, 24 to qualify).
+
+Two series types:
+- **Holiday regattas** (Memorial Day, 4th July, Labor Day): ~5 races over 2 days,
+  all races scored, no discards, TOTAL low points, Pos for everyone.
+- **Season series** (Spring/Summer/August/Fall, 2-3 races per Sunday): columns
+  Races Sailed / Discards / Races Scored / Total Points / **Ave Points** / Pos.
+  Ranked by AVERAGE points per scored race; a **To Qualify** minimum (e.g. 5 of
+  Spring's 10) — under it you're listed but unranked. **Missed races are simply
+  blank — no DNC penalty.** Attendance is handled by averaging + the qualify
+  minimum, NOT penalty points. (This answers the old season-throwout question:
+  the club does not use worst-N throwouts for the season; it averages.)
+
+Cell markings: lowercase "d" (e.g. "2d") = that race discarded, excluded from the
+total; uppercase "D" (e.g. "9D") = counts in Races Sailed but not in Races Scored
+(duty or DNF — meaning unconfirmed); "C" column header = cancelled race; yellow
+highlight = unknown (assigned score?); #N/A = sail-number lookup miss against a
+roster.
+
 ## Open questions (need answers from the club / PRC)
 
+- **Meaning of the cell codes**: is uppercase "D" race-committee duty credit or
+  DNF? What do the yellow-highlighted scores mean? Are discards ("d") picked by a
+  rule (how many per races sailed?) or marked by the scorekeeper's judgment?
 - **Handicap (corrected-time) scoring** — the paper form's Laser/Handicap column
-  records Class + finish Time, i.e. Portsmouth-yardstick corrected-time scoring,
-  which the app can't do (it scores placings only). Does the club want the app to
-  score the handicap fleet from elapsed times? If yes: standard US Sailing
-  Portsmouth numbers, or club-adjusted ratings?
-- **Season throwout rule** — season standings currently reuse the scorer's
-  worst-1/worst-2 setting. Do CLSA sailing instructions use a formula instead
-  (e.g. one throwout per N races completed)?
+  records Class + finish Time (Portsmouth-style corrected time), but the 2026
+  workbook has NO handicap sheet — is that fleet actually being scored? If the app
+  should score it: standard US Sailing Portsmouth numbers, or club ratings?
+- **Rebuild the app's season scoring to the club model?** The app currently does
+  RRS-style DNC-penalty totals with worst-N throwouts; the club uses average
+  points + qualify minimum with d/D/C markings. Confirm the app should switch to
+  (or offer) the club's average-points model before rebuilding.
 
 ## Parked
 
