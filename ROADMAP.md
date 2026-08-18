@@ -37,9 +37,25 @@ Cross-device source of truth for what's built, what's next, and what's parked.
 
 ## Next up
 
+- **Align scorer with the club's paper form** (Race-Form-3): relabel Boat →
+  "Boat / Sail #" (club records sail numbers); pre-seed the fleet autocomplete with
+  the club's seven fleets (Thistle, Highlander, MC Scow, Lightning, Snipe,
+  Flying Scot, Laser/Handicap); add optional Recorder and Conditions/notes fields
+  (course sailed, wind) saved into the archive record and CSV.
 - **Per-fleet rigging pages** — blocked on photos/steps from fleet captains.
 - **Header-less embed variants** for the ClubExpress integration — pending board
   approval.
+
+## Open questions (need answers from the club / PRC)
+
+- **Handicap (corrected-time) scoring** — the paper form's Laser/Handicap column
+  records Class + finish Time, i.e. Portsmouth-yardstick corrected-time scoring,
+  which the app can't do (it scores placings only). Does the club want the app to
+  score the handicap fleet from elapsed times? If yes: standard US Sailing
+  Portsmouth numbers, or club-adjusted ratings?
+- **Season throwout rule** — season standings currently reuse the scorer's
+  worst-1/worst-2 setting. Do CLSA sailing instructions use a formula instead
+  (e.g. one throwout per N races completed)?
 
 ## Parked
 
