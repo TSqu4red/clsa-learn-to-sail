@@ -1,7 +1,7 @@
 /* CLSA Learn to Sail — offline service worker.
    Bump VERSION on deploys that should invalidate cached pages. */
-const VERSION = 'clsa-v1';
-const PRECACHE = ['/', '/index.html', '/learn.html', '/racecourse.html', '/rigging.html'];
+const VERSION = 'clsa-v2';
+const PRECACHE = ['/', '/index.html', '/learn.html', '/racecourse.html', '/scoring.html', '/rigging.html'];
 
 self.addEventListener('install', e => {
   e.waitUntil(

@@ -26,6 +26,11 @@ Cross-device source of truth for what's built, what's next, and what's parked.
   name across days, DNC for a boat absent a whole day, throwouts from the scorer's
   setting), with season CSV and share link. Also − Boat / − Race buttons beside the
   + buttons.
+- **Scoring on its own page** (August 2026) — everything scorer-related moved from
+  the Race Day page to `scoring.html` (same localStorage keys, so browser data
+  carried over untouched). Race Day keeps a pointer card, and old
+  `racecourse.html#day=…` share links redirect to `scoring.html` preserving the
+  hash. SW `VERSION` bumped to `clsa-v2` with `scoring.html` precached.
 - **Offline service worker** (August 2026) — `sw.js` precaches all four pages,
   network-first with cache fallback for same-origin GETs; weather API passes through.
   **Bump `VERSION` in `sw.js` on any deploy that should invalidate cached pages.**
