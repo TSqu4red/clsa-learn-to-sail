@@ -4,6 +4,12 @@ Cross-device source of truth for what's built, what's next, and what's parked.
 
 ## Done
 
+- **New URL** (August 2026) — https://sailors-reference.vercel.app added as a
+  second production domain on the same Vercel project. The old
+  clsa-learn-to-sail.vercel.app stays live so existing share links, bookmarks,
+  and the scorekeeper's browser-stored race days keep working (scoring data is
+  per-URL — whoever keeps score should stick to one URL, or migrate once via
+  share links). Hand out the new URL going forward.
 - **Rebrand to "A Sailor's Guide to the Galaxy"** (August 2026) — EC feedback: the
   club is a volunteer organization with no licensed instructors and must not
   present itself as offering instruction; the site is also un-branded from CLSA so
@@ -45,9 +51,6 @@ Cross-device source of truth for what's built, what's next, and what's parked.
   **Bump `VERSION` in `sw.js` on any deploy that should invalidate cached pages.**
 
 ## Next up
-
-- **Custom domain + Vercel project rename** — the URL still says learn-to-sail
-  (clsa-learn-to-sail.vercel.app); pick a domain matching the new name.
 
 - **Align scorer with the club's paper form** (Race-Form-3): relabel Boat →
   "Boat / Sail #" (club records sail numbers); pre-seed the fleet autocomplete with
