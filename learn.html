@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CLSA Learn to Sail</title>
+<title>A Sailor's Guide to the Galaxy — Sailing Basics</title>
 <style>
   :root {
     --navy: #1a3a5c;
@@ -156,6 +156,9 @@
   .gloss-term b { color: var(--navy); }
   footer { text-align: center; padding: 20px; color: #888; font-size: 0.85rem; }
   footer a { color: var(--blue); }
+  .note-ref { background: #e8f1f8; border-left: 4px solid #2e6da4; border-radius: 0 6px 6px 0; padding: 12px 14px; margin: 0 0 18px; font-size: 0.95rem; }
+  .note-ref a { color: #2e6da4; }
+  .legal { margin: 26px auto 0; padding: 14px 16px 30px; border-top: 1px solid #ddd6c8; color: #99a; font-size: 0.78rem; line-height: 1.55; text-align: left; }
 </style>
 <script>window.clsaToggle=function(o){var d=document.getElementById("drawer"),s=document.getElementById("scrim");if(d&&s){d.classList.toggle("open",o);s.classList.toggle("open",o);}};</script>
 </head>
@@ -163,19 +166,19 @@
 <div class="appbar">
   <button class="menu" id="menuBtn" aria-label="Open menu" onclick="clsaToggle(true)"><svg viewBox="0 0 24 18" width="25" height="19" aria-hidden="true"><g fill="none" stroke="#e9e0cb" stroke-width="2.2" stroke-linecap="round"><path d="M2 3 q2 -1.6 4 0 t4 0 t4 0 t4 0"/><path d="M2 9 q2 -1.6 4 0 t4 0 t4 0 t4 0"/><path d="M2 15 q2 -1.6 4 0 t4 0 t4 0 t4 0"/></g></svg></button>
   <img class="ab-burgee" src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt="">
-  <span class="ab-title">Learn to Sail</span>
+  <span class="ab-title">Sailing Basics</span>
 </div>
 <div class="scrim" id="scrim" onclick="clsaToggle(false)"></div>
 <nav class="drawer" id="drawer" aria-label="Site menu">
   <button class="close" id="drawerClose" aria-label="Close menu" onclick="clsaToggle(false)">&times;</button>
-  <div class="dh"><img src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt=""><b>CLSA</b></div>
+  <div class="dh"><img src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt=""><b>A Sailor's Guide to the Galaxy</b></div>
   <div class="dsect">Tools</div>
   <a class="tool" href="index.html">Home</a>
-  <a class="tool" href="learn.html">Learn to Sail</a>
+  <a class="tool" href="learn.html">Sailing Basics</a>
   <a class="tool" href="racecourse.html">Race Day</a>
   <a class="tool" href="scoring.html">Race Scoring</a>
   <a class="tool" href="rigging.html">Fleet Rigging</a>
-  <div class="dsect">Learn to Sail sections</div>
+  <div class="dsect">Sailing Basics sections</div>
   <a data-tab="pos">Points of Sail</a>
   <a data-tab="parts">Parts of the Boat</a>
   <a data-tab="rules">Right of Way</a>
@@ -189,8 +192,8 @@
 
 <header>
   <a href="https://clsa.clubexpress.com" title="Cowan Lake Sailing Association" target="_blank"><img class="burgee" height="64" src="https://s3.amazonaws.com/ClubExpressClubFiles/294469/graphics/CowanLakeBurgee_260958746.gif" alt="CLSA burgee"></a>
-  <h1>CLSA Learn to Sail</h1>
-  <p>Cowan Lake Sailing Association — a beginner's guide for new sailors</p>
+  <h1>A Sailor's Guide to the Galaxy</h1>
+  <p>Sailing Basics — a beginner's reference for new sailors</p>
 </header>
 
 <nav>
@@ -206,6 +209,8 @@
 </nav>
 
 <main>
+
+<div class="note-ref"><b>This guide is a reference, not a sailing course.</b> Local sailing clubs are a great place to get on the water, but most — including CLSA — are volunteer organizations, not schools. If you're seeking formal instruction, consider programs such as the <a href="https://americansailing.com" target="_blank" rel="noopener">American Sailing Association</a> or <a href="https://www.ussailing.org" target="_blank" rel="noopener">US Sailing</a>.</div>
 
 <!-- ============ POINTS OF SAIL ============ -->
 <section id="pos" class="visible">
@@ -477,6 +482,7 @@
   Made for new sailors at <a href="https://clsa.clubexpress.com" target="_blank">Cowan Lake Sailing Association</a> ·
   Curious about the boats? Meet the <a href="https://sailhighlander.org" target="_blank">Highlander</a>.
 </footer>
+<div class="legal">A Sailor's Guide to the Galaxy is a volunteer-built reference provided as-is, without warranty of any kind. It is not sailing instruction and no certification is offered or implied. Sailing involves inherent risks; nothing here substitutes for proper training, judgment, or safety equipment. Race scoring tools are provided as a convenience — the Racing Rules of Sailing and your event's sailing instructions and race committee are always the final authority on results. Don't panic.</div>
 
 <script>
 /* ---------- tabs + mobile drawer ---------- */

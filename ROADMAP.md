@@ -1,8 +1,17 @@
-# CLSA Learn to Sail — Roadmap
+# A Sailor's Guide to the Galaxy — Roadmap
 
 Cross-device source of truth for what's built, what's next, and what's parked.
 
 ## Done
+
+- **Rebrand to "A Sailor's Guide to the Galaxy"** (August 2026) — EC feedback: the
+  club is a volunteer organization with no licensed instructors and must not
+  present itself as offering instruction; the site is also un-branded from CLSA so
+  it can serve any club. Site name changed everywhere (Learn to Sail page renamed
+  "Sailing Basics"); Cowan-specific content kept (the club is the venue).
+  Instruction pointer added atop Sailing Basics (ASA / US Sailing links); as-is
+  disclaimer footer on every page. File names and URLs unchanged. SW `VERSION`
+  bumped to `clsa-v3`.
 
 - **Series Scorer** (July 2026) — Low Point System per RRS Appendix A on the Race Day
   page: throwouts, scoring codes (DNF, DNS, DSQ, DNE…), A8 tie-breaks. State lives in
@@ -36,6 +45,9 @@ Cross-device source of truth for what's built, what's next, and what's parked.
   **Bump `VERSION` in `sw.js` on any deploy that should invalidate cached pages.**
 
 ## Next up
+
+- **Custom domain + Vercel project rename** — the URL still says learn-to-sail
+  (clsa-learn-to-sail.vercel.app); pick a domain matching the new name.
 
 - **Align scorer with the club's paper form** (Race-Form-3): relabel Boat →
   "Boat / Sail #" (club records sail numbers); pre-seed the fleet autocomplete with

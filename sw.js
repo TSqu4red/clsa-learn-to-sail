@@ -1,6 +1,6 @@
-/* CLSA Learn to Sail — offline service worker.
+/* A Sailor's Guide to the Galaxy — offline service worker.
    Bump VERSION on deploys that should invalidate cached pages. */
-const VERSION = 'clsa-v2';
+const VERSION = 'clsa-v3';
 const PRECACHE = ['/', '/index.html', '/learn.html', '/racecourse.html', '/scoring.html', '/rigging.html'];
 
 self.addEventListener('install', e => {

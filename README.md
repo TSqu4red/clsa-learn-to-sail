@@ -1,7 +1,8 @@
-# CLSA Learn to Sail
+# A Sailor's Guide to the Galaxy
 
-An interactive learn-to-sail guide for new sailors at the
-[Cowan Lake Sailing Association](https://clsa.clubexpress.com).
+An interactive sailing reference and race-tools site for new sailors — built at the
+[Cowan Lake Sailing Association](https://clsa.clubexpress.com), usable by any club.
+A volunteer-built reference, not sailing instruction.
 
 A single self-contained HTML page — no build step, no dependencies.
 
